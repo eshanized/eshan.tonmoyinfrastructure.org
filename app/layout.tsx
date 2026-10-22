@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Fira_Sans, Fira_Code } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme/ThemeProvider.tsx";
 import { Navbar } from "@/components/layout/Navbar.tsx";
@@ -7,6 +8,20 @@ import { SkipLink } from "@/components/layout/SkipLink.tsx";
 import { SITE_CONFIG } from "@/lib/seo/site-config.ts";
 import { getPersonJsonLd, getWebSiteJsonLd } from "@/lib/seo/json-ld.ts";
 import { getSearchIndex } from "@/lib/content/index.ts";
+
+const firaSans = Fira_Sans({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
+  variable: "--font-fira-sans",
+  display: "swap",
+});
+
+const firaCode = Fira_Code({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-fira-code",
+  display: "swap",
+});
 
 export const viewport: Viewport = {
   themeColor: [
@@ -75,7 +90,7 @@ export default function RootLayout({
   const websiteJsonLd = getWebSiteJsonLd();
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={`${firaSans.variable} ${firaCode.variable}`} suppressHydrationWarning>
       <head>
         <script
           type="application/ld+json"
@@ -86,7 +101,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
       </head>
-      <body className="antialiased flex flex-col min-h-screen">
+      <body className={`${firaSans.className} antialiased flex flex-col min-h-screen font-sans`}>
         <ThemeProvider>
           <SkipLink />
           <Navbar searchEntries={searchEntries} />
