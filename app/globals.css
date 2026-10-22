@@ -1,0 +1,282 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --canvas: #faf8f5;
+    --canvas-subtle: #f2efe9;
+    --canvas-card: #ffffff;
+    --canvas-elevated: #e8e4dc;
+
+    --ink-primary: #18191b;
+    --ink-secondary: #4a4d55;
+    --ink-muted: #72757d;
+
+    --coral: #d93829;
+    --coral-hover: #b82c1f;
+    --coral-subtle: rgba(217, 56, 41, 0.08);
+
+    --border-subtle: rgba(0, 0, 0, 0.08);
+    --border-mid: rgba(0, 0, 0, 0.16);
+    --border-highlight: rgba(0, 0, 0, 0.28);
+
+    --code-bg: #111215;
+    --code-fg: #f4f3ef;
+  }
+
+  .dark {
+    --canvas: #0c0d0e;
+    --canvas-subtle: #131417;
+    --canvas-card: #18191d;
+    --canvas-elevated: #22242a;
+
+    --ink-primary: #f4f3ef;
+    --ink-secondary: #a1a1aa;
+    --ink-muted: #71717a;
+
+    --coral: #ff5544;
+    --coral-hover: #ff7062;
+    --coral-subtle: rgba(255, 85, 68, 0.12);
+
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-mid: rgba(255, 255, 255, 0.16);
+    --border-highlight: rgba(255, 255, 255, 0.32);
+
+    --code-bg: #090a0c;
+    --code-fg: #f4f3ef;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    background-color: var(--canvas);
+    color: var(--ink-primary);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    background-color: var(--canvas);
+    color: var(--ink-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background-color: var(--coral);
+    color: #ffffff;
+  }
+
+  /* Accessible focus indicators */
+  :focus-visible {
+    outline: 2px solid var(--coral);
+    outline-offset: 2px;
+  }
+}
+
+/* Technical grid patterns */
+.tech-grid {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, var(--border-subtle) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--border-subtle) 1px, transparent 1px);
+}
+
+.tech-grid-dense {
+  background-size: 16px 16px;
+  background-image: 
+    linear-gradient(to right, var(--border-subtle) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--border-subtle) 1px, transparent 1px);
+}
+
+/* Subtle glow */
+.coral-glow {
+  background: radial-gradient(circle at 50% 30%, var(--coral-subtle) 0%, transparent 70%);
+}
+
+/* Terminal card styling */
+.terminal-card {
+  background-color: #0d0e12;
+  color: #f4f3ef;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+}
+
+/* Typography styles for prose articles and papers */
+.prose-editorial {
+  line-height: 1.8;
+  color: var(--ink-primary);
+}
+
+.prose-editorial h2 {
+  font-size: 1.65rem;
+  font-weight: 700;
+  margin-top: 2.75rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--ink-primary);
+  scroll-margin-top: 5rem;
+}
+
+.prose-editorial h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  color: var(--ink-primary);
+  scroll-margin-top: 5rem;
+}
+
+.prose-editorial p {
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+  color: var(--ink-secondary);
+}
+
+.prose-editorial strong {
+  color: var(--ink-primary);
+  font-weight: 600;
+}
+
+.prose-editorial a {
+  color: var(--coral);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: opacity 0.15s ease;
+}
+
+.prose-editorial a:hover {
+  opacity: 0.8;
+}
+
+.prose-editorial ul, .prose-editorial ol {
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+  padding-left: 1.75rem;
+  color: var(--ink-secondary);
+}
+
+.prose-editorial ul {
+  list-style-type: disc;
+}
+
+.prose-editorial ol {
+  list-style-type: decimal;
+}
+
+.prose-editorial li {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.prose-editorial blockquote {
+  border-left: 3px solid var(--coral);
+  padding-left: 1.25rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  font-style: italic;
+  color: var(--ink-secondary);
+  background: var(--canvas-subtle);
+  padding: 1rem 1.25rem;
+  border-radius: 0 0.375rem 0.375rem 0;
+}
+
+.prose-editorial pre {
+  background-color: var(--code-bg);
+  color: var(--code-fg);
+  padding: 1.25rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  border: 1px solid var(--border-subtle);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.prose-editorial code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.875em;
+  background-color: var(--canvas-subtle);
+  color: var(--coral);
+  padding: 0.15rem 0.35rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--border-subtle);
+}
+
+.prose-editorial pre code {
+  background-color: transparent;
+  color: inherit;
+  padding: 0;
+  border: none;
+  font-size: inherit;
+}
+
+.prose-editorial table {
+  width: 100%;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.prose-editorial th {
+  background-color: var(--canvas-subtle);
+  color: var(--ink-primary);
+  font-weight: 600;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-subtle);
+}
+
+.prose-editorial td {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-subtle);
+  color: var(--ink-secondary);
+}
+
+.prose-editorial tr:nth-child(even) {
+  background-color: var(--canvas-subtle);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--canvas);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ink-muted);
+  border-radius: 3px;
+  opacity: 0.5;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-secondary);
+}
+
+/* Print styling */
+@media print {
+  body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+  header, footer, nav, .no-print {
+    display: none !important;
+  }
+  .prose-editorial a {
+    text-decoration: underline !important;
+    color: #000000 !important;
+  }
+}

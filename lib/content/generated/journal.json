@@ -1,0 +1,404 @@
+[
+  {
+    "slug": "self-hosting-modern-webmail-openmail",
+    "title": "Engineering OpenMail: Modern Self-Hosted Mail Infrastructure with Zero-CLI Configuration",
+    "description": "Why self-hosted email infrastructure remains essential for digital sovereignty, and how OpenMail bridges legacy IMAP/SMTP protocols with modern reactive web ergonomics.",
+    "date": "2026-10-15",
+    "updatedAt": "2026-10-21",
+    "category": "Developer Infrastructure",
+    "tags": [
+      "infrastructure",
+      "email",
+      "self-hosting",
+      "openmail",
+      "php"
+    ],
+    "author": {
+      "name": "Eshan Roy",
+      "role": "Lead Creator, OpenMail",
+      "affiliation": "Tonmoy Infrastructure and Vision",
+      "url": "https://eshan.tonmoyinfrastructure.org",
+      "handle": "eshanized"
+    },
+    "featured": false,
+    "draft": false,
+    "relatedProjectSlug": "openmail",
+    "references": [
+      {
+        "id": "1",
+        "title": "OpenMail Source Repository",
+        "authors": [
+          "Eshan Roy"
+        ],
+        "year": 2026,
+        "venue": "github.com/eshanized/OpenMail",
+        "url": "https://github.com/eshanized/OpenMail"
+      }
+    ],
+    "rawContent": "\n## 1. Digital Sovereignty & The Centralization of Email\n\nEmail is one of the few foundational decentralized protocols remaining on the internet. However, over 85% of global corporate and personal email is now routed through just two hyperscalers: Google Workspace and Microsoft 365.\n\nThis centralization creates critical structural risks:\n1. **Arbitrary Account Freezes**: Automated AI risk models routinely lock accounts without human recourse or explanation.\n2. **Bulk Telemetry Harvesting**: Cloud providers parse message metadata and receipt bodies for advertising and training data.\n3. **Operational Fragility**: Outages in single cloud availability zones disrupt communication across thousands of independent businesses simultaneously.\n\nWhile open-source mail transfer agents (such as Postfix, Dovecot, and Haraka) provide rock-solid backend infrastructure, the webmail user interface layer has been stuck in the 2000s. Legacy interfaces like Roundcube and SquirrelMail feel sluggish, clunky on mobile devices, and require complex CLI file editing to configure.\n\nWe created **OpenMail** (`github.com/eshanized/OpenMail`) to solve this.\n\n---\n\n## 2. Zero-CLI Setup Wizard\n\nA primary barrier to self-hosting email is setup friction. Configuring database connections, IMAP ports, SSL certificates, and admin credentials in plaintext `.conf` files causes many teams to give up and return to proprietary cloud suites.\n\nOpenMail introduces a **browser-first graphical installation wizard**:\n\n```\n[Step 1: Environment Health Check]\n  - PHP 8.2+ runtime verification\n  - Sodium, OpenSSL, and IMAP extension checks\n  - Directory write permissions (/storage, /bootstrap/cache)\n\n[Step 2: Database Connection Test]\n  - Live probe of MySQL / PostgreSQL / SQLite socket\n  - Automated schema migration with progress telemetry\n\n[Step 3: Mail Server Handshake]\n  - Real-time STARTTLS handshake test with Postfix/Dovecot\n  - Authentication verification before finalizing settings\n\n[Step 4: Administrator Onboarding]\n  - Salted Argon2id credential hashing\n  - Immediate redirect to modern inbox cockpit\n```\n\nThis reduces the time required to deploy a modern, functioning webmail interface from hours to **less than 3 minutes**.\n\n---\n\n## 3. Architecture & Protocol Compliance\n\nOpenMail adheres strictly to standard email RFCs:\n- **IMAP4rev1 (RFC 3501)** for folder synchronizations, message flags (`\\Seen`, `\\Flagged`, `\\Draft`), and MIME body part parsing.\n- **SMTP (RFC 5321)** with mandatory STARTTLS transport security.\n- **Clean Responsive UI**: Engineered with Tailwind CSS and reactive components, delivering 60 FPS transitions and full mobile touch optimization.\n\n---\n\n## 4. Conclusion\n\nTrue software autonomy requires owning your communication channels. OpenMail provides teams and institutions with sovereign, beautiful email infrastructure that anyone can deploy and manage.\n\nInspect the repository and contribute at [github.com/eshanized/OpenMail](https://github.com/eshanized/OpenMail).\n",
+    "contentHtml": "<h2>1. Digital Sovereignty &#x26; The Centralization of Email</h2>\n<p>Email is one of the few foundational decentralized protocols remaining on the internet. However, over 85% of global corporate and personal email is now routed through just two hyperscalers: Google Workspace and Microsoft 365.</p>\n<p>This centralization creates critical structural risks:</p>\n<ol>\n<li><strong>Arbitrary Account Freezes</strong>: Automated AI risk models routinely lock accounts without human recourse or explanation.</li>\n<li><strong>Bulk Telemetry Harvesting</strong>: Cloud providers parse message metadata and receipt bodies for advertising and training data.</li>\n<li><strong>Operational Fragility</strong>: Outages in single cloud availability zones disrupt communication across thousands of independent businesses simultaneously.</li>\n</ol>\n<p>While open-source mail transfer agents (such as Postfix, Dovecot, and Haraka) provide rock-solid backend infrastructure, the webmail user interface layer has been stuck in the 2000s. Legacy interfaces like Roundcube and SquirrelMail feel sluggish, clunky on mobile devices, and require complex CLI file editing to configure.</p>\n<p>We created <strong>OpenMail</strong> (<code>github.com/eshanized/OpenMail</code>) to solve this.</p>\n<hr>\n<h2>2. Zero-CLI Setup Wizard</h2>\n<p>A primary barrier to self-hosting email is setup friction. Configuring database connections, IMAP ports, SSL certificates, and admin credentials in plaintext <code>.conf</code> files causes many teams to give up and return to proprietary cloud suites.</p>\n<p>OpenMail introduces a <strong>browser-first graphical installation wizard</strong>:</p>\n<pre><code>[Step 1: Environment Health Check]\n  - PHP 8.2+ runtime verification\n  - Sodium, OpenSSL, and IMAP extension checks\n  - Directory write permissions (/storage, /bootstrap/cache)\n\n[Step 2: Database Connection Test]\n  - Live probe of MySQL / PostgreSQL / SQLite socket\n  - Automated schema migration with progress telemetry\n\n[Step 3: Mail Server Handshake]\n  - Real-time STARTTLS handshake test with Postfix/Dovecot\n  - Authentication verification before finalizing settings\n\n[Step 4: Administrator Onboarding]\n  - Salted Argon2id credential hashing\n  - Immediate redirect to modern inbox cockpit\n</code></pre>\n<p>This reduces the time required to deploy a modern, functioning webmail interface from hours to <strong>less than 3 minutes</strong>.</p>\n<hr>\n<h2>3. Architecture &#x26; Protocol Compliance</h2>\n<p>OpenMail adheres strictly to standard email RFCs:</p>\n<ul>\n<li><strong>IMAP4rev1 (RFC 3501)</strong> for folder synchronizations, message flags (<code>\\Seen</code>, <code>\\Flagged</code>, <code>\\Draft</code>), and MIME body part parsing.</li>\n<li><strong>SMTP (RFC 5321)</strong> with mandatory STARTTLS transport security.</li>\n<li><strong>Clean Responsive UI</strong>: Engineered with Tailwind CSS and reactive components, delivering 60 FPS transitions and full mobile touch optimization.</li>\n</ul>\n<hr>\n<h2>4. Conclusion</h2>\n<p>True software autonomy requires owning your communication channels. OpenMail provides teams and institutions with sovereign, beautiful email infrastructure that anyone can deploy and manage.</p>\n<p>Inspect the repository and contribute at <a href=\"https://github.com/eshanized/OpenMail\">github.com/eshanized/OpenMail</a>.</p>\n",
+    "readingTime": 2,
+    "toc": [
+      {
+        "level": 2,
+        "text": "1. Digital Sovereignty & The Centralization of Email",
+        "id": "1-digital-sovereignty-the-centralization-of-email"
+      },
+      {
+        "level": 2,
+        "text": "2. Zero-CLI Setup Wizard",
+        "id": "2-zero-cli-setup-wizard"
+      },
+      {
+        "level": 2,
+        "text": "3. Architecture & Protocol Compliance",
+        "id": "3-architecture-protocol-compliance"
+      },
+      {
+        "level": 2,
+        "text": "4. Conclusion",
+        "id": "4-conclusion"
+      }
+    ]
+  },
+  {
+    "slug": "high-performance-rust-allocators-and-concurrency",
+    "title": "High-Performance Concurrency in Rust: Lessons from Building Veda and Polaris",
+    "description": "Practical lessons learned building low-latency parallel runtimes, lock-free work-stealing deques, and declarative procedural macro engines in production Rust.",
+    "date": "2026-10-12",
+    "updatedAt": "2026-10-20",
+    "category": "Rust & Concurrency",
+    "tags": [
+      "rust",
+      "concurrency",
+      "distributed-systems",
+      "lock-free",
+      "proc-macros"
+    ],
+    "author": {
+      "name": "Eshan Roy",
+      "role": "Systems Programmer",
+      "affiliation": "Tonmoy Infrastructure and Vision",
+      "url": "https://eshan.tonmoyinfrastructure.org",
+      "handle": "eshanized"
+    },
+    "featured": false,
+    "draft": false,
+    "relatedProjectSlug": "veda",
+    "references": [
+      {
+        "id": "1",
+        "title": "The Rust Reference: Memory Model & Atomics",
+        "authors": [
+          "Rust Project Contributors"
+        ],
+        "year": 2024,
+        "venue": "doc.rust-lang.org/reference",
+        "url": "https://doc.rust-lang.org/reference/behavior-considered-undefined.html"
+      }
+    ],
+    "rawContent": "\n## 1. Concurrency Bottlenecks in Practice\n\nRust provides compile-time data race freedom through its ownership and borrow checker model. However, compile-time safety does not prevent runtime concurrency bottlenecks:\n- **Lock Contention**: Wrapping a shared task queue in `Arc<Mutex<Vec<Task>>>` works for tens of tasks, but degrades into massive thread sleep/wake context-switch overhead under thousands of micro-tasks.\n- **Cache-Line Bouncing**: Modifying atomic counters that share a 64-byte L1 cache line forces CPU cores to constantly invalidate each other's local caches via the MESI coherence protocol.\n- **Allocation Jitter**: Invoking standard `malloc` / jemalloc inside tight parallel loops introduces non-deterministic latency spikes.\n\nOver the past year building **Veda** (`github.com/TIVerse/veda-rs`) and **Polaris** (`crates.io/crates/eshanized-polaris`), we developed a collection of concrete systems patterns to eliminate these bottlenecks.\n\n---\n\n## 2. Lock-Free Chase-Lev Deques\n\nIn Veda, each worker thread owns a specialized Chase-Lev circular work-stealing deque. The thread pushes and pops from one end (`bottom`) without acquiring any locks, while foreign thief threads steal from the opposite end (`top`) using atomic Compare-And-Swap (CAS) instructions:\n\n```rust\n// Conceptual structure of Veda's work-stealing buffer\npub struct WorkStealingDeque<T> {\n    top: AtomicIsize,\n    bottom: AtomicIsize,\n    buffer: AtomicPtr<CircularBuffer<T>>,\n}\n\nimpl<T> WorkStealingDeque<T> {\n    pub fn push(&self, task: T) {\n        let b = self.bottom.load(Ordering::Relaxed);\n        let t = self.top.load(Ordering::Acquire);\n        let buf = unsafe { &*self.buffer.load(Ordering::Relaxed) };\n        \n        if b - t >= buf.capacity() as isize {\n            self.grow_buffer();\n        }\n        \n        buf.store(b, task);\n        self.bottom.store(b + 1, Ordering::Release);\n    }\n}\n```\n\nBy decoupling the worker's hot path from the thief's contention path, task dispatch overhead drops to **sub-2 microseconds**.\n\n---\n\n## 3. Eliminating False Sharing with `#[repr(align(64))]`\n\nA subtle performance bug in multi-core systems is **false sharing**: when variables updated by different threads reside in the same CPU cache line (64 bytes on x86_64 and ARM64).\n\nEven if Thread A only updates variable $X$ and Thread B only updates variable $Y$, the entire 64-byte line bounces across cores:\n\n```rust\n// BAD: False sharing between worker telemetry counters\npub struct WorkerStats {\n    pub tasks_completed: AtomicU64, // Core 0 writes here\n    pub steal_attempts: AtomicU64,   // Core 1 writes here\n}\n\n// GOOD: Explicit 64-byte cache alignment padding\n#[repr(align(64))]\npub struct AlignedCounter {\n    pub value: AtomicU64,\n}\n\npub struct WorkerStats {\n    pub tasks_completed: AlignedCounter,\n    pub steal_attempts: AlignedCounter,\n}\n```\n\nThis single padding optimization improved multi-threaded task throughput by **38%** in high-core Criterion benchmarks.\n\n---\n\n## 4. Declarative Distributed Tasks in Polaris\n\nIn **Polaris**, our distributed compute framework, we wanted systems developers to execute cluster jobs with the same ergonomics as local async functions.\n\nUsing Rust procedural macros (`syn` & `quote`), we created the `#[task]` attribute macro:\n\n```rust\nuse eshanized_polaris::prelude::*;\n\n#[task(cluster = \"primary\", retries = 3, timeout_ms = 5000)]\npub async fn compute_ast_hash(file_bytes: Vec<u8>) -> Result<u64, ComputeError> {\n    // Distributed cluster engine handles node discovery, heartbeats,\n    // serialization, and work queue routing automatically.\n    Ok(crc64(&file_bytes))\n}\n```\n\nUnder the hood, the macro generates cluster RPC serialization wrappers, register entries in the node heartbeat table, and automatic retry state machines, freeing developers from manual networking plumbing.\n\n---\n\n## 5. Summary\n\nWriting performant concurrent software in Rust requires understanding both the compiler's guarantees and the underlying CPU memory architecture. Check out the code in [github.com/TIVerse/veda-rs](https://github.com/TIVerse/veda-rs) and [crates.io/crates/eshanized-polaris](https://crates.io/crates/eshanized-polaris).\n",
+    "contentHtml": "<h2>1. Concurrency Bottlenecks in Practice</h2>\n<p>Rust provides compile-time data race freedom through its ownership and borrow checker model. However, compile-time safety does not prevent runtime concurrency bottlenecks:</p>\n<ul>\n<li><strong>Lock Contention</strong>: Wrapping a shared task queue in <code>Arc&#x3C;Mutex&#x3C;Vec&#x3C;Task>>></code> works for tens of tasks, but degrades into massive thread sleep/wake context-switch overhead under thousands of micro-tasks.</li>\n<li><strong>Cache-Line Bouncing</strong>: Modifying atomic counters that share a 64-byte L1 cache line forces CPU cores to constantly invalidate each other's local caches via the MESI coherence protocol.</li>\n<li><strong>Allocation Jitter</strong>: Invoking standard <code>malloc</code> / jemalloc inside tight parallel loops introduces non-deterministic latency spikes.</li>\n</ul>\n<p>Over the past year building <strong>Veda</strong> (<code>github.com/TIVerse/veda-rs</code>) and <strong>Polaris</strong> (<code>crates.io/crates/eshanized-polaris</code>), we developed a collection of concrete systems patterns to eliminate these bottlenecks.</p>\n<hr>\n<h2>2. Lock-Free Chase-Lev Deques</h2>\n<p>In Veda, each worker thread owns a specialized Chase-Lev circular work-stealing deque. The thread pushes and pops from one end (<code>bottom</code>) without acquiring any locks, while foreign thief threads steal from the opposite end (<code>top</code>) using atomic Compare-And-Swap (CAS) instructions:</p>\n<pre><code class=\"language-rust\">// Conceptual structure of Veda's work-stealing buffer\npub struct WorkStealingDeque&#x3C;T> {\n    top: AtomicIsize,\n    bottom: AtomicIsize,\n    buffer: AtomicPtr&#x3C;CircularBuffer&#x3C;T>>,\n}\n\nimpl&#x3C;T> WorkStealingDeque&#x3C;T> {\n    pub fn push(&#x26;self, task: T) {\n        let b = self.bottom.load(Ordering::Relaxed);\n        let t = self.top.load(Ordering::Acquire);\n        let buf = unsafe { &#x26;*self.buffer.load(Ordering::Relaxed) };\n        \n        if b - t >= buf.capacity() as isize {\n            self.grow_buffer();\n        }\n        \n        buf.store(b, task);\n        self.bottom.store(b + 1, Ordering::Release);\n    }\n}\n</code></pre>\n<p>By decoupling the worker's hot path from the thief's contention path, task dispatch overhead drops to <strong>sub-2 microseconds</strong>.</p>\n<hr>\n<h2>3. Eliminating False Sharing with <code>#[repr(align(64))]</code></h2>\n<p>A subtle performance bug in multi-core systems is <strong>false sharing</strong>: when variables updated by different threads reside in the same CPU cache line (64 bytes on x86_64 and ARM64).</p>\n<p>Even if Thread A only updates variable $X$ and Thread B only updates variable $Y$, the entire 64-byte line bounces across cores:</p>\n<pre><code class=\"language-rust\">// BAD: False sharing between worker telemetry counters\npub struct WorkerStats {\n    pub tasks_completed: AtomicU64, // Core 0 writes here\n    pub steal_attempts: AtomicU64,   // Core 1 writes here\n}\n\n// GOOD: Explicit 64-byte cache alignment padding\n#[repr(align(64))]\npub struct AlignedCounter {\n    pub value: AtomicU64,\n}\n\npub struct WorkerStats {\n    pub tasks_completed: AlignedCounter,\n    pub steal_attempts: AlignedCounter,\n}\n</code></pre>\n<p>This single padding optimization improved multi-threaded task throughput by <strong>38%</strong> in high-core Criterion benchmarks.</p>\n<hr>\n<h2>4. Declarative Distributed Tasks in Polaris</h2>\n<p>In <strong>Polaris</strong>, our distributed compute framework, we wanted systems developers to execute cluster jobs with the same ergonomics as local async functions.</p>\n<p>Using Rust procedural macros (<code>syn</code> &#x26; <code>quote</code>), we created the <code>#[task]</code> attribute macro:</p>\n<pre><code class=\"language-rust\">use eshanized_polaris::prelude::*;\n\n#[task(cluster = \"primary\", retries = 3, timeout_ms = 5000)]\npub async fn compute_ast_hash(file_bytes: Vec&#x3C;u8>) -> Result&#x3C;u64, ComputeError> {\n    // Distributed cluster engine handles node discovery, heartbeats,\n    // serialization, and work queue routing automatically.\n    Ok(crc64(&#x26;file_bytes))\n}\n</code></pre>\n<p>Under the hood, the macro generates cluster RPC serialization wrappers, register entries in the node heartbeat table, and automatic retry state machines, freeing developers from manual networking plumbing.</p>\n<hr>\n<h2>5. Summary</h2>\n<p>Writing performant concurrent software in Rust requires understanding both the compiler's guarantees and the underlying CPU memory architecture. Check out the code in <a href=\"https://github.com/TIVerse/veda-rs\">github.com/TIVerse/veda-rs</a> and <a href=\"https://crates.io/crates/eshanized-polaris\">crates.io/crates/eshanized-polaris</a>.</p>\n",
+    "readingTime": 3,
+    "toc": [
+      {
+        "level": 2,
+        "text": "1. Concurrency Bottlenecks in Practice",
+        "id": "1-concurrency-bottlenecks-in-practice"
+      },
+      {
+        "level": 2,
+        "text": "2. Lock-Free Chase-Lev Deques",
+        "id": "2-lock-free-chase-lev-deques"
+      },
+      {
+        "level": 2,
+        "text": "3. Eliminating False Sharing with #[repr(align(64))]",
+        "id": "3-eliminating-false-sharing-with-repralign64"
+      },
+      {
+        "level": 2,
+        "text": "4. Declarative Distributed Tasks in Polaris",
+        "id": "4-declarative-distributed-tasks-in-polaris"
+      },
+      {
+        "level": 2,
+        "text": "5. Summary",
+        "id": "5-summary"
+      }
+    ]
+  },
+  {
+    "slug": "deterministic-policy-gates-for-ai-coding",
+    "title": "Why Chatbots Fail at Coding: Enforcing Deterministic Policy Gates in Autonomous Agents",
+    "description": "Why prompt engineering alone cannot secure AI coding agents, and how compiled AST verification and non-bypassable policy gates turn unpredictable model outputs into reliable repository mutations.",
+    "date": "2026-10-08",
+    "updatedAt": "2026-10-17",
+    "category": "Autonomous Agents",
+    "tags": [
+      "ai-safety",
+      "policy-gates",
+      "ast",
+      "tree-sitter",
+      "compiler-verification"
+    ],
+    "author": {
+      "name": "Eshan Roy",
+      "role": "Principal Systems Architect",
+      "affiliation": "Tonmoy Infrastructure and Vision",
+      "url": "https://eshan.tonmoyinfrastructure.org",
+      "handle": "eshanized"
+    },
+    "featured": false,
+    "draft": false,
+    "relatedProjectSlug": "octate",
+    "references": [
+      {
+        "id": "1",
+        "title": "Tree-sitter WASM Multi-Language Parsing",
+        "authors": [
+          "Max Brunsfeld"
+        ],
+        "year": 2022,
+        "venue": "GitHub Research",
+        "url": "https://tree-sitter.github.io/"
+      }
+    ],
+    "rawContent": "\n## 1. The Fallacy of System Prompts\n\nA common design pattern in generative AI tooling is instructing the model via system prompt:\n\n> *\"You are a careful software engineer. Do not modify files outside `src/`. Never delete files. Always write valid TypeScript.\"*\n\nThis approach fails in production because **natural language prompts cannot enforce security boundaries**. Under complex task descriptions, long context windows, or deliberate prompt injections, language models frequently disobey conversational instructions.\n\nIf an agent can execute arbitrary shell commands or write directly to the filesystem, security is compromised. The solution is not better prompts — it is **deterministic software architecture**.\n\n---\n\n## 2. Tree-sitter AST Pre-Validation\n\nIn **Octate** (`github.com/eshanized/Octate`) and **M31A**, we implement local Abstract Syntax Tree (AST) pre-validation using **Tree-sitter WASM**.\n\nBefore any candidate code modification proposed by an LLM is accepted by the runtime:\n1. The proposed diff is applied to an in-memory virtual syntax tree.\n2. Tree-sitter incrementally parses the modified file.\n3. If the syntax tree contains `ERROR` or `MISSING` nodes, the mutation is rejected immediately at the runtime level.\n\n```rust\n// Simplified Tree-sitter AST Verification in Rust\npub fn verify_ast_integrity(source_code: &str, language: &Language) -> Result<(), PolicyViolation> {\n    let mut parser = Parser::new();\n    parser.set_language(language)?;\n    \n    let tree = parser.parse(source_code, None)\n        .ok_or(PolicyViolation::SyntaxParseFailed)?;\n        \n    let root_node = tree.root_node();\n    if root_node.has_error() {\n        let error_span = find_first_error_span(root_node);\n        return Err(PolicyViolation::SyntaxErrorAtSpan(error_span));\n    }\n    \n    Ok(())\n}\n```\n\nBy catching syntax errors before disk writes, we prevent the model from entering destructive circular repair loops where it breaks working imports while attempting to fix an unrelated logic bug.\n\n---\n\n## 3. The ALLOW / DENY / ASK State Machine\n\nRather than binary execution, our policy gate evaluates mutations against a three-state transition matrix:\n\n```\n                          [Proposed Mutation]\n                                   |\n                                   v\n                      +-------------------------+\n                      |   11-Stage Policy Gate  |\n                      +-------------------------+\n                               /   |   \\\n                     ALLOW    /    |    \\    DENY\n                             /     |     \\\n                            v      |      v\n                   [Apply to Staging]  [Immediate Halt & Rejection]\n                                   |\n                                  ASK\n                                   |\n                                   v\n                   [Human Operator Prompt with Diff]\n```\n\n- **`ALLOW`**: Low-risk operations within approved subtrees (e.g., editing unit tests in `tests/`, compiling release targets).\n- **`DENY`**: Invariant violations (e.g., modifying files matching `.env*`, executing unauthorized network binaries, path traversals). These halt execution immediately and return structured diagnostics to the agent.\n- **`ASK`**: High-impact architectural changes (e.g., modifying database schema migrations, altering public API interfaces, running git push). The runtime pauses execution and renders an interactive diff in the developer's terminal for explicit approval.\n\n---\n\n## 4. Conclusion\n\nTreating language models as untrusted reasoning modules bounded by deterministic, compiled software guarantees transforms fragile AI experiments into dependable engineering infrastructure.\n",
+    "contentHtml": "<h2>1. The Fallacy of System Prompts</h2>\n<p>A common design pattern in generative AI tooling is instructing the model via system prompt:</p>\n<blockquote>\n<p><em>\"You are a careful software engineer. Do not modify files outside <code>src/</code>. Never delete files. Always write valid TypeScript.\"</em></p>\n</blockquote>\n<p>This approach fails in production because <strong>natural language prompts cannot enforce security boundaries</strong>. Under complex task descriptions, long context windows, or deliberate prompt injections, language models frequently disobey conversational instructions.</p>\n<p>If an agent can execute arbitrary shell commands or write directly to the filesystem, security is compromised. The solution is not better prompts — it is <strong>deterministic software architecture</strong>.</p>\n<hr>\n<h2>2. Tree-sitter AST Pre-Validation</h2>\n<p>In <strong>Octate</strong> (<code>github.com/eshanized/Octate</code>) and <strong>M31A</strong>, we implement local Abstract Syntax Tree (AST) pre-validation using <strong>Tree-sitter WASM</strong>.</p>\n<p>Before any candidate code modification proposed by an LLM is accepted by the runtime:</p>\n<ol>\n<li>The proposed diff is applied to an in-memory virtual syntax tree.</li>\n<li>Tree-sitter incrementally parses the modified file.</li>\n<li>If the syntax tree contains <code>ERROR</code> or <code>MISSING</code> nodes, the mutation is rejected immediately at the runtime level.</li>\n</ol>\n<pre><code class=\"language-rust\">// Simplified Tree-sitter AST Verification in Rust\npub fn verify_ast_integrity(source_code: &#x26;str, language: &#x26;Language) -> Result&#x3C;(), PolicyViolation> {\n    let mut parser = Parser::new();\n    parser.set_language(language)?;\n    \n    let tree = parser.parse(source_code, None)\n        .ok_or(PolicyViolation::SyntaxParseFailed)?;\n        \n    let root_node = tree.root_node();\n    if root_node.has_error() {\n        let error_span = find_first_error_span(root_node);\n        return Err(PolicyViolation::SyntaxErrorAtSpan(error_span));\n    }\n    \n    Ok(())\n}\n</code></pre>\n<p>By catching syntax errors before disk writes, we prevent the model from entering destructive circular repair loops where it breaks working imports while attempting to fix an unrelated logic bug.</p>\n<hr>\n<h2>3. The ALLOW / DENY / ASK State Machine</h2>\n<p>Rather than binary execution, our policy gate evaluates mutations against a three-state transition matrix:</p>\n<pre><code>                          [Proposed Mutation]\n                                   |\n                                   v\n                      +-------------------------+\n                      |   11-Stage Policy Gate  |\n                      +-------------------------+\n                               /   |   \\\n                     ALLOW    /    |    \\    DENY\n                             /     |     \\\n                            v      |      v\n                   [Apply to Staging]  [Immediate Halt &#x26; Rejection]\n                                   |\n                                  ASK\n                                   |\n                                   v\n                   [Human Operator Prompt with Diff]\n</code></pre>\n<ul>\n<li><strong><code>ALLOW</code></strong>: Low-risk operations within approved subtrees (e.g., editing unit tests in <code>tests/</code>, compiling release targets).</li>\n<li><strong><code>DENY</code></strong>: Invariant violations (e.g., modifying files matching <code>.env*</code>, executing unauthorized network binaries, path traversals). These halt execution immediately and return structured diagnostics to the agent.</li>\n<li><strong><code>ASK</code></strong>: High-impact architectural changes (e.g., modifying database schema migrations, altering public API interfaces, running git push). The runtime pauses execution and renders an interactive diff in the developer's terminal for explicit approval.</li>\n</ul>\n<hr>\n<h2>4. Conclusion</h2>\n<p>Treating language models as untrusted reasoning modules bounded by deterministic, compiled software guarantees transforms fragile AI experiments into dependable engineering infrastructure.</p>\n",
+    "readingTime": 3,
+    "toc": [
+      {
+        "level": 2,
+        "text": "1. The Fallacy of System Prompts",
+        "id": "1-the-fallacy-of-system-prompts"
+      },
+      {
+        "level": 2,
+        "text": "2. Tree-sitter AST Pre-Validation",
+        "id": "2-tree-sitter-ast-pre-validation"
+      },
+      {
+        "level": 2,
+        "text": "3. The ALLOW / DENY / ASK State Machine",
+        "id": "3-the-allow-deny-ask-state-machine"
+      },
+      {
+        "level": 2,
+        "text": "4. Conclusion",
+        "id": "4-conclusion"
+      }
+    ]
+  },
+  {
+    "slug": "designing-zero-trust-desktop-agents-kyro",
+    "title": "Designing Kyro: Local-First Desktop Automation with Tauri v2, Rust, and MCP",
+    "description": "How we built Kyro, a local-first autonomous desktop AI agent that bridges screen understanding and real computer use with zero-trust local SQLite privacy and OS Keyring security.",
+    "date": "2026-10-02",
+    "updatedAt": "2026-10-21",
+    "category": "Systems Engineering",
+    "tags": [
+      "tauri",
+      "rust",
+      "desktop-agents",
+      "mcp",
+      "security"
+    ],
+    "author": {
+      "name": "Eshan Roy",
+      "role": "Lead Creator, Kyro",
+      "affiliation": "Tonmoy Infrastructure and Vision",
+      "url": "https://eshan.tonmoyinfrastructure.org",
+      "handle": "eshanized"
+    },
+    "featured": true,
+    "draft": false,
+    "relatedProjectSlug": "kyro",
+    "references": [
+      {
+        "id": "1",
+        "title": "Kyro Documentation Portal",
+        "authors": [
+          "Eshan Roy"
+        ],
+        "year": 2026,
+        "venue": "kyro.tonmoyinfrastructure.org",
+        "url": "https://kyro.tonmoyinfrastructure.org"
+      },
+      {
+        "id": "2",
+        "title": "Model Context Protocol Specification",
+        "authors": [
+          "Anthropic"
+        ],
+        "year": 2024,
+        "venue": "modelcontextprotocol.io",
+        "url": "https://modelcontextprotocol.io"
+      }
+    ],
+    "rawContent": "\n## 1. The Screen Automation Challenge\n\nWhile terminal agents like M31A solve code repository mutations, developers and knowledge workers spend most of their time in visual applications: web browsers, Figma, design tools, chat clients, and proprietary GUI dashboards.\n\nRecent attempts at \"computer use\" agents have predominantly been cloud-wrapped Python scripts that capture screenshots every 2 seconds and stream raw bitmaps to remote third-party API servers.\n\nThis cloud-dependent paradigm introduces severe obstacles:\n1. **Unacceptable Latency**: Uploading 4K PNG frames over residential internet creates a 2.5–5 second delay per mouse click or keystroke.\n2. **Severe Privacy Breaches**: Screen captures inadvertently expose personal banking tabs, confidential client emails, private Slack messages, and authentication cookies to cloud logging endpoints.\n3. **Electron Memory Bloat**: Typical desktop AI apps bundle full Chromium runtimes that consume 800MB–1.5GB of RAM before performing any work.\n\nTo solve this, we engineered **Kyro** (`kyro.tonmoyinfrastructure.org`).\n\n---\n\n## 2. Why Tauri v2 and Rust?\n\nRather than packaging another heavy Electron shell, Kyro uses **Tauri v2** with a native **Rust backend** and a lightweight React 19 frontend:\n\n| Metric | Electron Wrapper | Kyro (Tauri v2 + Rust) | Improvement |\n| :--- | :--- | :--- | :--- |\n| **Idle Memory (RAM)** | 680 MB – 1.1 GB | **< 95 MB** | **~85% less memory** |\n| **Binary Bundle Size** | 185 MB – 240 MB | **38 MB** | **80% smaller** |\n| **Local Frame Processing** | Web APIs (slow) | **Native X11 / Wayland / Quartz** | **Microsecond capture** |\n| **System Secret Storage** | Plaintext config files | **OS Keyring Vault** | **Hardware-backed security** |\n\n```\n+--------------------------------------------------------------+\n|                     REACT 19 FRONTEND                        |\n|        Interactive visual timeline & approval cockpit        |\n+--------------------------------------------------------------+\n                               |\n                               | Typed Tauri IPC (zero-copy)\n                               v\n+--------------------------------------------------------------+\n|                    KYRO RUST NATIVE CORE                     |\n|  - Screen Frame Capture (x11rb / wayland-client / Quartz)    |\n|  - Input Simulation (enigo / native evdev)                   |\n|  - Model Context Protocol (MCP) JSON-RPC Engine              |\n+--------------------------------------------------------------+\n                               |\n                               +---> Local SQLite (WAL Mode)\n                               +---> OS Keyring (Vault)\n```\n\n---\n\n## 3. The Zero-Trust Security Architecture\n\nKyro enforces a strict zero-trust security model:\n\n1. **Local-Only Persistence**: All conversations, task histories, action logs, and vector embeddings are stored in a local SQLite database running in WAL mode on your disk (`~/.local/share/kyro/data.db`). Zero telemetry leaves the machine.\n2. **OS Keyring Vault (`Vault`)**: Model provider API keys (OpenAI, Anthropic, OpenRouter, Ollama) are never stored in plaintext JSON or `.env` files. They are encrypted using the host operating system's native credential manager (Linux Secret Service, macOS Keychain, Windows Credential Manager).\n3. **Argument-Aware Authorization**: Dangerous operations (such as deleting files, submitting forms with payment data, or sending external emails) trigger an explicit visual confirmation prompt in the Kyro desktop interface.\n\n---\n\n## 4. Model Context Protocol (MCP) Integration\n\nKyro includes a native JSON-RPC client for Anthropic's **Model Context Protocol (MCP)**. This enables Kyro to discover and execute tools exposed by local developer environments:\n- Reading files from local git repositories.\n- Querying local Postgres or SQLite databases.\n- Triggering local test harnesses and reporting structured results.\n\nBy combining visual UI automation with protocol-driven MCP tools, Kyro acts as a unified autonomous copilot for the entire desktop operating system.\n\n---\n\n## 5. Experience Kyro\n\nKyro is open source. You can download pre-built Linux AppImage binaries, macOS DMG packages, or build from source:\n\nVisit the official documentation portal at [kyro.tonmoyinfrastructure.org](https://kyro.tonmoyinfrastructure.org) or inspect the repository at [github.com/eshanized/Kyro](https://github.com/eshanized/Kyro).\n",
+    "contentHtml": "<h2>1. The Screen Automation Challenge</h2>\n<p>While terminal agents like M31A solve code repository mutations, developers and knowledge workers spend most of their time in visual applications: web browsers, Figma, design tools, chat clients, and proprietary GUI dashboards.</p>\n<p>Recent attempts at \"computer use\" agents have predominantly been cloud-wrapped Python scripts that capture screenshots every 2 seconds and stream raw bitmaps to remote third-party API servers.</p>\n<p>This cloud-dependent paradigm introduces severe obstacles:</p>\n<ol>\n<li><strong>Unacceptable Latency</strong>: Uploading 4K PNG frames over residential internet creates a 2.5–5 second delay per mouse click or keystroke.</li>\n<li><strong>Severe Privacy Breaches</strong>: Screen captures inadvertently expose personal banking tabs, confidential client emails, private Slack messages, and authentication cookies to cloud logging endpoints.</li>\n<li><strong>Electron Memory Bloat</strong>: Typical desktop AI apps bundle full Chromium runtimes that consume 800MB–1.5GB of RAM before performing any work.</li>\n</ol>\n<p>To solve this, we engineered <strong>Kyro</strong> (<code>kyro.tonmoyinfrastructure.org</code>).</p>\n<hr>\n<h2>2. Why Tauri v2 and Rust?</h2>\n<p>Rather than packaging another heavy Electron shell, Kyro uses <strong>Tauri v2</strong> with a native <strong>Rust backend</strong> and a lightweight React 19 frontend:</p>\n<table>\n<thead>\n<tr>\n<th align=\"left\">Metric</th>\n<th align=\"left\">Electron Wrapper</th>\n<th align=\"left\">Kyro (Tauri v2 + Rust)</th>\n<th align=\"left\">Improvement</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td align=\"left\"><strong>Idle Memory (RAM)</strong></td>\n<td align=\"left\">680 MB – 1.1 GB</td>\n<td align=\"left\"><strong>&#x3C; 95 MB</strong></td>\n<td align=\"left\"><strong>~85% less memory</strong></td>\n</tr>\n<tr>\n<td align=\"left\"><strong>Binary Bundle Size</strong></td>\n<td align=\"left\">185 MB – 240 MB</td>\n<td align=\"left\"><strong>38 MB</strong></td>\n<td align=\"left\"><strong>80% smaller</strong></td>\n</tr>\n<tr>\n<td align=\"left\"><strong>Local Frame Processing</strong></td>\n<td align=\"left\">Web APIs (slow)</td>\n<td align=\"left\"><strong>Native X11 / Wayland / Quartz</strong></td>\n<td align=\"left\"><strong>Microsecond capture</strong></td>\n</tr>\n<tr>\n<td align=\"left\"><strong>System Secret Storage</strong></td>\n<td align=\"left\">Plaintext config files</td>\n<td align=\"left\"><strong>OS Keyring Vault</strong></td>\n<td align=\"left\"><strong>Hardware-backed security</strong></td>\n</tr>\n</tbody>\n</table>\n<pre><code>+--------------------------------------------------------------+\n|                     REACT 19 FRONTEND                        |\n|        Interactive visual timeline &#x26; approval cockpit        |\n+--------------------------------------------------------------+\n                               |\n                               | Typed Tauri IPC (zero-copy)\n                               v\n+--------------------------------------------------------------+\n|                    KYRO RUST NATIVE CORE                     |\n|  - Screen Frame Capture (x11rb / wayland-client / Quartz)    |\n|  - Input Simulation (enigo / native evdev)                   |\n|  - Model Context Protocol (MCP) JSON-RPC Engine              |\n+--------------------------------------------------------------+\n                               |\n                               +---> Local SQLite (WAL Mode)\n                               +---> OS Keyring (Vault)\n</code></pre>\n<hr>\n<h2>3. The Zero-Trust Security Architecture</h2>\n<p>Kyro enforces a strict zero-trust security model:</p>\n<ol>\n<li><strong>Local-Only Persistence</strong>: All conversations, task histories, action logs, and vector embeddings are stored in a local SQLite database running in WAL mode on your disk (<code>~/.local/share/kyro/data.db</code>). Zero telemetry leaves the machine.</li>\n<li><strong>OS Keyring Vault (<code>Vault</code>)</strong>: Model provider API keys (OpenAI, Anthropic, OpenRouter, Ollama) are never stored in plaintext JSON or <code>.env</code> files. They are encrypted using the host operating system's native credential manager (Linux Secret Service, macOS Keychain, Windows Credential Manager).</li>\n<li><strong>Argument-Aware Authorization</strong>: Dangerous operations (such as deleting files, submitting forms with payment data, or sending external emails) trigger an explicit visual confirmation prompt in the Kyro desktop interface.</li>\n</ol>\n<hr>\n<h2>4. Model Context Protocol (MCP) Integration</h2>\n<p>Kyro includes a native JSON-RPC client for Anthropic's <strong>Model Context Protocol (MCP)</strong>. This enables Kyro to discover and execute tools exposed by local developer environments:</p>\n<ul>\n<li>Reading files from local git repositories.</li>\n<li>Querying local Postgres or SQLite databases.</li>\n<li>Triggering local test harnesses and reporting structured results.</li>\n</ul>\n<p>By combining visual UI automation with protocol-driven MCP tools, Kyro acts as a unified autonomous copilot for the entire desktop operating system.</p>\n<hr>\n<h2>5. Experience Kyro</h2>\n<p>Kyro is open source. You can download pre-built Linux AppImage binaries, macOS DMG packages, or build from source:</p>\n<p>Visit the official documentation portal at <a href=\"https://kyro.tonmoyinfrastructure.org\">kyro.tonmoyinfrastructure.org</a> or inspect the repository at <a href=\"https://github.com/eshanized/Kyro\">github.com/eshanized/Kyro</a>.</p>\n",
+    "readingTime": 3,
+    "toc": [
+      {
+        "level": 2,
+        "text": "1. The Screen Automation Challenge",
+        "id": "1-the-screen-automation-challenge"
+      },
+      {
+        "level": 2,
+        "text": "2. Why Tauri v2 and Rust?",
+        "id": "2-why-tauri-v2-and-rust"
+      },
+      {
+        "level": 2,
+        "text": "3. The Zero-Trust Security Architecture",
+        "id": "3-the-zero-trust-security-architecture"
+      },
+      {
+        "level": 2,
+        "text": "4. Model Context Protocol (MCP) Integration",
+        "id": "4-model-context-protocol-mcp-integration"
+      },
+      {
+        "level": 2,
+        "text": "5. Experience Kyro",
+        "id": "5-experience-kyro"
+      }
+    ]
+  },
+  {
+    "slug": "snigdha-os-custom-linux-engineering",
+    "title": "Architecting Snigdha OS: Custom Kernel Switching, Minimal Arch Base, and i3wm Workstation Ergonomics",
+    "description": "How we engineered an Arch-based Linux ecosystem tailored for developer productivity, systems programming, and penetration testing, featuring custom kernel tooling and automated PKGBUILD pipelines.",
+    "date": "2026-09-24",
+    "updatedAt": "2026-10-12",
+    "category": "Linux Engineering",
+    "tags": [
+      "linux",
+      "arch-linux",
+      "snigdha-os",
+      "kernel",
+      "i3wm"
+    ],
+    "author": {
+      "name": "Eshan Roy",
+      "role": "Lead Architect, Snigdha OS",
+      "affiliation": "Tonmoy Infrastructure and Vision",
+      "url": "https://eshan.tonmoyinfrastructure.org",
+      "handle": "eshanized"
+    },
+    "featured": true,
+    "draft": false,
+    "relatedProjectSlug": "snigdha-os",
+    "references": [
+      {
+        "id": "1",
+        "title": "Snigdha OS Organization Repositories",
+        "authors": [
+          "Snigdha OS Core Team"
+        ],
+        "year": 2026,
+        "venue": "github.com/Snigdha-OS",
+        "url": "https://github.com/Snigdha-OS"
+      }
+    ],
+    "rawContent": "\n## 1. The Developer Operating System Dilemma\n\nModern desktop operating systems consume gigabytes of RAM simply idling on a blank desktop. Commercial distributions ship invasive telemetry agents, background indexing daemons, and forced software update loops that interrupt active development workflows.\n\nWhen building systems software in Rust or C, developers require three fundamental operating system guarantees:\n1. **Low Latency & Zero Telemetry**: Every CPU cycle should be dedicated to compilation and testing, not background advertising engines.\n2. **Access to Bleeding-Edge Toolchains**: Fast access to the newest Linux kernel drivers, compiler toolchains, and hardware acceleration libraries without waiting 6–12 months for distribution releases.\n3. **Deterministic System Packaging**: Predictable, transparent package definitions where every binary can be audited, recompiled, and modified via plain-text PKGBUILD scripts.\n\nThis led to the creation of **Snigdha OS** (`github.com/Snigdha-OS`).\n\n---\n\n## 2. Arch Linux as the Rolling Foundation\n\nWe chose an Arch Linux base for its rolling release model and minimal baseline philosophy. However, traditional Arch installations require hours of manual setup, partitioning, font rendering configuration, and display server troubleshooting.\n\nSnigdha OS packages this into an engineered, reproducible ecosystem:\n- **`snigdhaos-core`**: A stripped-down, highly tuned base system image with optimized systemd service defaults, zram swap compression, and aggressive memory management.\n- **`snigdhaos-pkgbuilds`**: A dedicated repository mirror maintained by Tonmoy Infrastructure, providing continuous builds for developer utilities, security tools, and tiling window managers.\n\n---\n\n## 3. Custom Kernel Switching Framework\n\nSystems developers frequently need to switch between different Linux kernel variations depending on their workload:\n- **Linux Zen Kernel**: Tuned for desktop interactivity, low audio/display latency, and high responsiveness.\n- **Linux LTS Kernel**: Long-Term Support kernel for maximum hardware stability and server workloads.\n- **Linux Hardened Kernel**: Security-focused kernel with enhanced ASLR, restricted ptrace, and disabled unprivileged user namespaces.\n\nTo eliminate the manual editing of GRUB configs and mkinitcpio hooks, we built **`snigdhaos-kernel-switcher`** in Rust:\n\n```bash\n# List available kernels and active bootloader entries\nsnigdhaos-kernel-switcher --list\n\n# Switch default boot target to Zen kernel\nsudo snigdhaos-kernel-switcher --set linux-zen\n\n# Automatically regenerate bootloader configuration\nsudo snigdhaos-kernel-switcher --apply\n```\n\nThe tool inspects `/boot`, verifies kernel signature integrity, automatically manages initramfs generation via `mkinitcpio`, and updates systemd-boot or GRUB without corrupting boot records.\n\n---\n\n## 4. Keyboard-First i3wm Workstation Ergonomics\n\nA core aspect of the Snigdha OS experience is our custom **i3wm tiling configuration** (`github.com/eshanized/i3wm`).\n\nIn a standard floating desktop (GNOME or Windows), developers waste minutes per hour dragging window borders, minimizing overlapping windows, and searching through taskbars.\n\nOur i3 setup enforces deterministic tiling geometry:\n- **Dual-head workspace binding**: Code editor on Workspace 1 (Primary display), terminals and compiler logs on Workspace 2 (Secondary display), documentation on Workspace 3.\n- **Sub-200MB Idle RAM Footprint**: Leaving >98% of system memory available for large rustc compilation runs and local LLM inference.\n- **Alacritty & Kitty GPU Acceleration**: Zero-latency terminal emulator rendering paired with JetBrains Mono and Fira Sans fonts.\n\n---\n\n## 5. Conclusion\n\nSnigdha OS represents an ongoing commitment to open-source software autonomy. By owning the operating environment from the kernel layer up to the window manager, we ensure our development infrastructure remains fast, predictable, and free from external platform lock-in.\n\nCheck out the project repositories at [github.com/Snigdha-OS](https://github.com/Snigdha-OS).\n",
+    "contentHtml": "<h2>1. The Developer Operating System Dilemma</h2>\n<p>Modern desktop operating systems consume gigabytes of RAM simply idling on a blank desktop. Commercial distributions ship invasive telemetry agents, background indexing daemons, and forced software update loops that interrupt active development workflows.</p>\n<p>When building systems software in Rust or C, developers require three fundamental operating system guarantees:</p>\n<ol>\n<li><strong>Low Latency &#x26; Zero Telemetry</strong>: Every CPU cycle should be dedicated to compilation and testing, not background advertising engines.</li>\n<li><strong>Access to Bleeding-Edge Toolchains</strong>: Fast access to the newest Linux kernel drivers, compiler toolchains, and hardware acceleration libraries without waiting 6–12 months for distribution releases.</li>\n<li><strong>Deterministic System Packaging</strong>: Predictable, transparent package definitions where every binary can be audited, recompiled, and modified via plain-text PKGBUILD scripts.</li>\n</ol>\n<p>This led to the creation of <strong>Snigdha OS</strong> (<code>github.com/Snigdha-OS</code>).</p>\n<hr>\n<h2>2. Arch Linux as the Rolling Foundation</h2>\n<p>We chose an Arch Linux base for its rolling release model and minimal baseline philosophy. However, traditional Arch installations require hours of manual setup, partitioning, font rendering configuration, and display server troubleshooting.</p>\n<p>Snigdha OS packages this into an engineered, reproducible ecosystem:</p>\n<ul>\n<li><strong><code>snigdhaos-core</code></strong>: A stripped-down, highly tuned base system image with optimized systemd service defaults, zram swap compression, and aggressive memory management.</li>\n<li><strong><code>snigdhaos-pkgbuilds</code></strong>: A dedicated repository mirror maintained by Tonmoy Infrastructure, providing continuous builds for developer utilities, security tools, and tiling window managers.</li>\n</ul>\n<hr>\n<h2>3. Custom Kernel Switching Framework</h2>\n<p>Systems developers frequently need to switch between different Linux kernel variations depending on their workload:</p>\n<ul>\n<li><strong>Linux Zen Kernel</strong>: Tuned for desktop interactivity, low audio/display latency, and high responsiveness.</li>\n<li><strong>Linux LTS Kernel</strong>: Long-Term Support kernel for maximum hardware stability and server workloads.</li>\n<li><strong>Linux Hardened Kernel</strong>: Security-focused kernel with enhanced ASLR, restricted ptrace, and disabled unprivileged user namespaces.</li>\n</ul>\n<p>To eliminate the manual editing of GRUB configs and mkinitcpio hooks, we built <strong><code>snigdhaos-kernel-switcher</code></strong> in Rust:</p>\n<pre><code class=\"language-bash\"># List available kernels and active bootloader entries\nsnigdhaos-kernel-switcher --list\n\n# Switch default boot target to Zen kernel\nsudo snigdhaos-kernel-switcher --set linux-zen\n\n# Automatically regenerate bootloader configuration\nsudo snigdhaos-kernel-switcher --apply\n</code></pre>\n<p>The tool inspects <code>/boot</code>, verifies kernel signature integrity, automatically manages initramfs generation via <code>mkinitcpio</code>, and updates systemd-boot or GRUB without corrupting boot records.</p>\n<hr>\n<h2>4. Keyboard-First i3wm Workstation Ergonomics</h2>\n<p>A core aspect of the Snigdha OS experience is our custom <strong>i3wm tiling configuration</strong> (<code>github.com/eshanized/i3wm</code>).</p>\n<p>In a standard floating desktop (GNOME or Windows), developers waste minutes per hour dragging window borders, minimizing overlapping windows, and searching through taskbars.</p>\n<p>Our i3 setup enforces deterministic tiling geometry:</p>\n<ul>\n<li><strong>Dual-head workspace binding</strong>: Code editor on Workspace 1 (Primary display), terminals and compiler logs on Workspace 2 (Secondary display), documentation on Workspace 3.</li>\n<li><strong>Sub-200MB Idle RAM Footprint</strong>: Leaving >98% of system memory available for large rustc compilation runs and local LLM inference.</li>\n<li><strong>Alacritty &#x26; Kitty GPU Acceleration</strong>: Zero-latency terminal emulator rendering paired with JetBrains Mono and Fira Sans fonts.</li>\n</ul>\n<hr>\n<h2>5. Conclusion</h2>\n<p>Snigdha OS represents an ongoing commitment to open-source software autonomy. By owning the operating environment from the kernel layer up to the window manager, we ensure our development infrastructure remains fast, predictable, and free from external platform lock-in.</p>\n<p>Check out the project repositories at <a href=\"https://github.com/Snigdha-OS\">github.com/Snigdha-OS</a>.</p>\n",
+    "readingTime": 3,
+    "toc": [
+      {
+        "level": 2,
+        "text": "1. The Developer Operating System Dilemma",
+        "id": "1-the-developer-operating-system-dilemma"
+      },
+      {
+        "level": 2,
+        "text": "2. Arch Linux as the Rolling Foundation",
+        "id": "2-arch-linux-as-the-rolling-foundation"
+      },
+      {
+        "level": 2,
+        "text": "3. Custom Kernel Switching Framework",
+        "id": "3-custom-kernel-switching-framework"
+      },
+      {
+        "level": 2,
+        "text": "4. Keyboard-First i3wm Workstation Ergonomics",
+        "id": "4-keyboard-first-i3wm-workstation-ergonomics"
+      },
+      {
+        "level": 2,
+        "text": "5. Conclusion",
+        "id": "5-conclusion"
+      }
+    ]
+  },
+  {
+    "slug": "building-m31a-runtime-architecture",
+    "title": "Inside M31A: Building a Rust-Native Autonomous Engineering Runtime",
+    "description": "A comprehensive architectural breakdown of M31A, explaining why intelligence is not authority, how the 10-tier downward module hierarchy functions, and how two-phase SQLite recovery prevents workspace corruption.",
+    "date": "2026-09-18",
+    "updatedAt": "2026-10-16",
+    "category": "Autonomous Agents",
+    "tags": [
+      "rust",
+      "m31a",
+      "autonomous-agents",
+      "ratatui",
+      "systems-architecture"
+    ],
+    "author": {
+      "name": "Eshan Roy",
+      "role": "Principal Systems Architect",
+      "affiliation": "Tonmoy Infrastructure and Vision",
+      "url": "https://eshan.tonmoyinfrastructure.org",
+      "handle": "eshanized"
+    },
+    "featured": true,
+    "draft": false,
+    "relatedProjectSlug": "m31a",
+    "references": [
+      {
+        "id": "1",
+        "title": "M31 Autonomous Documentation",
+        "authors": [
+          "Eshan Roy"
+        ],
+        "year": 2026,
+        "venue": "m31a.tonmoyinfrastructure.org",
+        "url": "https://m31a.tonmoyinfrastructure.org"
+      }
+    ],
+    "rawContent": "\n## 1. Why Another Coding Agent?\n\nMost AI coding tools in the industry today are thin wrapper clients around LLM chat endpoints. They spawn an interactive bash shell in the background, send user instructions to a cloud API, and allow the model to pipe arbitrary commands into `exec()`.\n\nWhen this approach meets real-world software engineering, three structural failure modes appear immediately:\n1. **Unconstrained Side Effects**: The model attempts `git reset --hard` or modifies `.bashrc` when debugging a local path issue.\n2. **Hallucinated Success**: The model confidently states \"I have refactored the auth module and all 40 tests pass,\" while never having executed the compiler.\n3. **Dirty Crash States**: An unexpected token exhaustion or network timeout terminates the process halfway through a multi-file rewrite, leaving syntax errors scattered across the repository.\n\nWith **M31A (M31 Autonomous)**, we discarded the chatbot paradigm and built a **sovereign engineering runtime** written entirely in Rust.\n\n---\n\n## 2. Architectural Invariant: Intelligence is Not Authority\n\nIn M31A, we enforce a strict architectural boundary between **reasoning** and **authority**:\n\n```\n+--------------------------------------------------------------+\n|                    L9 // AGENT REASONING                     |\n|           Proposes candidate mutations and intent            |\n+--------------------------------------------------------------+\n                               |\n                               | Untrusted Intent\n                               v\n+--------------------------------------------------------------+\n|                     L5 // POLICY ENGINE                      |\n|         Deterministic 11-Stage ALLOW / DENY Gate             |\n+--------------------------------------------------------------+\n                               |\n                               | Authorized Action\n                               v\n+--------------------------------------------------------------+\n|               L2-L3 // PERSISTENCE & SANDBOX                 |\n|           SQLite WAL atomic snapshot & POSIX isolation       |\n+--------------------------------------------------------------+\n```\n\nThe language model is treated as an untrusted third-party component. It does not have access to standard library file APIs, cannot read ambient environment variables, and cannot execute shell processes.\n\nIt can only emit structured JSON intent envelopes matching our strict schema:\n\n```rust\npub enum ProposedAction {\n    ModifyFile {\n        path: PathBuf,\n        expected_pre_hash: String,\n        diff: String,\n    },\n    SpawnCompiler {\n        target: BuildTarget,\n        flags: Vec<String>,\n    },\n    RunTestSuite {\n        filter: Option<String>,\n    },\n    RequestOperatorApproval {\n        reason: String,\n        context_diff: String,\n    },\n}\n```\n\n---\n\n## 3. The 10-Tier Downward Hierarchy (L0 to L9)\n\nM31A enforces a compile-time downward dependency rule: code in layer $L_k$ may only depend on modules in layers $L_j$ where $j < k$. Cyclic dependencies across layers fail the CI compiler pass:\n\n- **L0: Primitives & Types**: Common error enums, cryptographic hashes, UUIDs.\n- **L1: Redaction & Security**: Entropy scanners, zero-leak credential scrubbers.\n- **L2: Persistence**: SQLite WAL state machine, transaction journals.\n- **L3: Process Confinement**: Linux cgroups v2, namespaces, macOS Seatbelt profiles.\n- **L4: Repository Intelligence**: Git object model, AST trees, diff generators.\n- **L5: Policy Gate**: 11-stage non-bypassable security checks.\n- **L6: Verification Engine**: Compiler diagnostic parsers, test runners.\n- **L7: Task Graph (DAG)**: Topological wave execution and dependency resolution.\n- **L8: Terminal Cockpit**: Ratatui-based TUI, keyboard events, diff rendering.\n- **L9: Autonomous Agents**: Model orchestration, prompt synthesis, tool calling.\n\n---\n\n## 4. The 4-Stage Execution Loop\n\nEvery mission runs through an unbroken 4-stage state machine:\n\n1. **PLAN**: The reasoning engine inspects repository symbols and synthesizes an acyclic directed graph (DAG).\n2. **APPLY**: Candidate actions are submitted to the Policy Gate. If approved, file diffs are written to a temporary staging buffer.\n3. **CHECK**: The verification engine invokes compiler diagnostics and test suites inside the execution sandbox.\n4. **STATE**: If checks pass, changes are atomically committed to SQLite and disk with a SHA-256 state manifest. If any check fails, the staging buffer is discarded and the model receives compiler diagnostics for self-repair.\n\n---\n\n## 5. Summary & Getting Started\n\nM31A proves that artificial intelligence can be safely integrated into developer infrastructure when wrapped in rigorous systems software.\n\nExplore the source code on GitHub at [github.com/eshanized/M31A](https://github.com/eshanized/M31A) or read the complete technical documentation at [m31a.tonmoyinfrastructure.org](https://m31a.tonmoyinfrastructure.org).\n",
+    "contentHtml": "<h2>1. Why Another Coding Agent?</h2>\n<p>Most AI coding tools in the industry today are thin wrapper clients around LLM chat endpoints. They spawn an interactive bash shell in the background, send user instructions to a cloud API, and allow the model to pipe arbitrary commands into <code>exec()</code>.</p>\n<p>When this approach meets real-world software engineering, three structural failure modes appear immediately:</p>\n<ol>\n<li><strong>Unconstrained Side Effects</strong>: The model attempts <code>git reset --hard</code> or modifies <code>.bashrc</code> when debugging a local path issue.</li>\n<li><strong>Hallucinated Success</strong>: The model confidently states \"I have refactored the auth module and all 40 tests pass,\" while never having executed the compiler.</li>\n<li><strong>Dirty Crash States</strong>: An unexpected token exhaustion or network timeout terminates the process halfway through a multi-file rewrite, leaving syntax errors scattered across the repository.</li>\n</ol>\n<p>With <strong>M31A (M31 Autonomous)</strong>, we discarded the chatbot paradigm and built a <strong>sovereign engineering runtime</strong> written entirely in Rust.</p>\n<hr>\n<h2>2. Architectural Invariant: Intelligence is Not Authority</h2>\n<p>In M31A, we enforce a strict architectural boundary between <strong>reasoning</strong> and <strong>authority</strong>:</p>\n<pre><code>+--------------------------------------------------------------+\n|                    L9 // AGENT REASONING                     |\n|           Proposes candidate mutations and intent            |\n+--------------------------------------------------------------+\n                               |\n                               | Untrusted Intent\n                               v\n+--------------------------------------------------------------+\n|                     L5 // POLICY ENGINE                      |\n|         Deterministic 11-Stage ALLOW / DENY Gate             |\n+--------------------------------------------------------------+\n                               |\n                               | Authorized Action\n                               v\n+--------------------------------------------------------------+\n|               L2-L3 // PERSISTENCE &#x26; SANDBOX                 |\n|           SQLite WAL atomic snapshot &#x26; POSIX isolation       |\n+--------------------------------------------------------------+\n</code></pre>\n<p>The language model is treated as an untrusted third-party component. It does not have access to standard library file APIs, cannot read ambient environment variables, and cannot execute shell processes.</p>\n<p>It can only emit structured JSON intent envelopes matching our strict schema:</p>\n<pre><code class=\"language-rust\">pub enum ProposedAction {\n    ModifyFile {\n        path: PathBuf,\n        expected_pre_hash: String,\n        diff: String,\n    },\n    SpawnCompiler {\n        target: BuildTarget,\n        flags: Vec&#x3C;String>,\n    },\n    RunTestSuite {\n        filter: Option&#x3C;String>,\n    },\n    RequestOperatorApproval {\n        reason: String,\n        context_diff: String,\n    },\n}\n</code></pre>\n<hr>\n<h2>3. The 10-Tier Downward Hierarchy (L0 to L9)</h2>\n<p>M31A enforces a compile-time downward dependency rule: code in layer $L_k$ may only depend on modules in layers $L_j$ where $j &#x3C; k$. Cyclic dependencies across layers fail the CI compiler pass:</p>\n<ul>\n<li><strong>L0: Primitives &#x26; Types</strong>: Common error enums, cryptographic hashes, UUIDs.</li>\n<li><strong>L1: Redaction &#x26; Security</strong>: Entropy scanners, zero-leak credential scrubbers.</li>\n<li><strong>L2: Persistence</strong>: SQLite WAL state machine, transaction journals.</li>\n<li><strong>L3: Process Confinement</strong>: Linux cgroups v2, namespaces, macOS Seatbelt profiles.</li>\n<li><strong>L4: Repository Intelligence</strong>: Git object model, AST trees, diff generators.</li>\n<li><strong>L5: Policy Gate</strong>: 11-stage non-bypassable security checks.</li>\n<li><strong>L6: Verification Engine</strong>: Compiler diagnostic parsers, test runners.</li>\n<li><strong>L7: Task Graph (DAG)</strong>: Topological wave execution and dependency resolution.</li>\n<li><strong>L8: Terminal Cockpit</strong>: Ratatui-based TUI, keyboard events, diff rendering.</li>\n<li><strong>L9: Autonomous Agents</strong>: Model orchestration, prompt synthesis, tool calling.</li>\n</ul>\n<hr>\n<h2>4. The 4-Stage Execution Loop</h2>\n<p>Every mission runs through an unbroken 4-stage state machine:</p>\n<ol>\n<li><strong>PLAN</strong>: The reasoning engine inspects repository symbols and synthesizes an acyclic directed graph (DAG).</li>\n<li><strong>APPLY</strong>: Candidate actions are submitted to the Policy Gate. If approved, file diffs are written to a temporary staging buffer.</li>\n<li><strong>CHECK</strong>: The verification engine invokes compiler diagnostics and test suites inside the execution sandbox.</li>\n<li><strong>STATE</strong>: If checks pass, changes are atomically committed to SQLite and disk with a SHA-256 state manifest. If any check fails, the staging buffer is discarded and the model receives compiler diagnostics for self-repair.</li>\n</ol>\n<hr>\n<h2>5. Summary &#x26; Getting Started</h2>\n<p>M31A proves that artificial intelligence can be safely integrated into developer infrastructure when wrapped in rigorous systems software.</p>\n<p>Explore the source code on GitHub at <a href=\"https://github.com/eshanized/M31A\">github.com/eshanized/M31A</a> or read the complete technical documentation at <a href=\"https://m31a.tonmoyinfrastructure.org\">m31a.tonmoyinfrastructure.org</a>.</p>\n",
+    "readingTime": 3,
+    "toc": [
+      {
+        "level": 2,
+        "text": "1. Why Another Coding Agent?",
+        "id": "1-why-another-coding-agent"
+      },
+      {
+        "level": 2,
+        "text": "2. Architectural Invariant: Intelligence is Not Authority",
+        "id": "2-architectural-invariant-intelligence-is-not-authority"
+      },
+      {
+        "level": 2,
+        "text": "3. The 10-Tier Downward Hierarchy (L0 to L9)",
+        "id": "3-the-10-tier-downward-hierarchy-l0-to-l9"
+      },
+      {
+        "level": 2,
+        "text": "4. The 4-Stage Execution Loop",
+        "id": "4-the-4-stage-execution-loop"
+      },
+      {
+        "level": 2,
+        "text": "5. Summary & Getting Started",
+        "id": "5-summary-getting-started"
+      }
+    ]
+  }
+]

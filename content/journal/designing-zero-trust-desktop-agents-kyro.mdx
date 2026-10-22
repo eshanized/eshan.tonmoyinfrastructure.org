@@ -1,0 +1,105 @@
+---
+slug: "designing-zero-trust-desktop-agents-kyro"
+title: "Designing Kyro: Local-First Desktop Automation with Tauri v2, Rust, and MCP"
+description: "How we built Kyro, a local-first autonomous desktop AI agent that bridges screen understanding and real computer use with zero-trust local SQLite privacy and OS Keyring security."
+date: "2026-10-02"
+updatedAt: "2026-10-21"
+category: "Systems Engineering"
+tags: ["tauri", "rust", "desktop-agents", "mcp", "security"]
+featured: true
+draft: false
+relatedProjectSlug: "kyro"
+author:
+  name: "Eshan Roy"
+  role: "Lead Creator, Kyro"
+  affiliation: "Tonmoy Infrastructure and Vision"
+  url: "https://eshan.tonmoyinfrastructure.org"
+  handle: "eshanized"
+references:
+  - id: "1"
+    title: "Kyro Documentation Portal"
+    authors: ["Eshan Roy"]
+    year: 2026
+    venue: "kyro.tonmoyinfrastructure.org"
+    url: "https://kyro.tonmoyinfrastructure.org"
+  - id: "2"
+    title: "Model Context Protocol Specification"
+    authors: ["Anthropic"]
+    year: 2024
+    venue: "modelcontextprotocol.io"
+    url: "https://modelcontextprotocol.io"
+---
+
+## 1. The Screen Automation Challenge
+
+While terminal agents like M31A solve code repository mutations, developers and knowledge workers spend most of their time in visual applications: web browsers, Figma, design tools, chat clients, and proprietary GUI dashboards.
+
+Recent attempts at "computer use" agents have predominantly been cloud-wrapped Python scripts that capture screenshots every 2 seconds and stream raw bitmaps to remote third-party API servers.
+
+This cloud-dependent paradigm introduces severe obstacles:
+1. **Unacceptable Latency**: Uploading 4K PNG frames over residential internet creates a 2.5–5 second delay per mouse click or keystroke.
+2. **Severe Privacy Breaches**: Screen captures inadvertently expose personal banking tabs, confidential client emails, private Slack messages, and authentication cookies to cloud logging endpoints.
+3. **Electron Memory Bloat**: Typical desktop AI apps bundle full Chromium runtimes that consume 800MB–1.5GB of RAM before performing any work.
+
+To solve this, we engineered **Kyro** (`kyro.tonmoyinfrastructure.org`).
+
+---
+
+## 2. Why Tauri v2 and Rust?
+
+Rather than packaging another heavy Electron shell, Kyro uses **Tauri v2** with a native **Rust backend** and a lightweight React 19 frontend:
+
+| Metric | Electron Wrapper | Kyro (Tauri v2 + Rust) | Improvement |
+| :--- | :--- | :--- | :--- |
+| **Idle Memory (RAM)** | 680 MB – 1.1 GB | **< 95 MB** | **~85% less memory** |
+| **Binary Bundle Size** | 185 MB – 240 MB | **38 MB** | **80% smaller** |
+| **Local Frame Processing** | Web APIs (slow) | **Native X11 / Wayland / Quartz** | **Microsecond capture** |
+| **System Secret Storage** | Plaintext config files | **OS Keyring Vault** | **Hardware-backed security** |
+
+```
++--------------------------------------------------------------+
+|                     REACT 19 FRONTEND                        |
+|        Interactive visual timeline & approval cockpit        |
++--------------------------------------------------------------+
+                               |
+                               | Typed Tauri IPC (zero-copy)
+                               v
++--------------------------------------------------------------+
+|                    KYRO RUST NATIVE CORE                     |
+|  - Screen Frame Capture (x11rb / wayland-client / Quartz)    |
+|  - Input Simulation (enigo / native evdev)                   |
+|  - Model Context Protocol (MCP) JSON-RPC Engine              |
++--------------------------------------------------------------+
+                               |
+                               +---> Local SQLite (WAL Mode)
+                               +---> OS Keyring (Vault)
+```
+
+---
+
+## 3. The Zero-Trust Security Architecture
+
+Kyro enforces a strict zero-trust security model:
+
+1. **Local-Only Persistence**: All conversations, task histories, action logs, and vector embeddings are stored in a local SQLite database running in WAL mode on your disk (`~/.local/share/kyro/data.db`). Zero telemetry leaves the machine.
+2. **OS Keyring Vault (`Vault`)**: Model provider API keys (OpenAI, Anthropic, OpenRouter, Ollama) are never stored in plaintext JSON or `.env` files. They are encrypted using the host operating system's native credential manager (Linux Secret Service, macOS Keychain, Windows Credential Manager).
+3. **Argument-Aware Authorization**: Dangerous operations (such as deleting files, submitting forms with payment data, or sending external emails) trigger an explicit visual confirmation prompt in the Kyro desktop interface.
+
+---
+
+## 4. Model Context Protocol (MCP) Integration
+
+Kyro includes a native JSON-RPC client for Anthropic's **Model Context Protocol (MCP)**. This enables Kyro to discover and execute tools exposed by local developer environments:
+- Reading files from local git repositories.
+- Querying local Postgres or SQLite databases.
+- Triggering local test harnesses and reporting structured results.
+
+By combining visual UI automation with protocol-driven MCP tools, Kyro acts as a unified autonomous copilot for the entire desktop operating system.
+
+---
+
+## 5. Experience Kyro
+
+Kyro is open source. You can download pre-built Linux AppImage binaries, macOS DMG packages, or build from source:
+
+Visit the official documentation portal at [kyro.tonmoyinfrastructure.org](https://kyro.tonmoyinfrastructure.org) or inspect the repository at [github.com/eshanized/Kyro](https://github.com/eshanized/Kyro).

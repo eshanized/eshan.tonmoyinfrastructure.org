@@ -1,0 +1,299 @@
+[
+  {
+    "type": "research",
+    "title": "Parameter-Efficient Fine-Tuning Benchmarks for Sub-8B Small Language Models",
+    "slug": "/research/parameter-efficient-fine-tuning-slm",
+    "subtitle": "Applied ML Report · SLM-RES-2026-004",
+    "excerpt": "Deploying generative intelligence on edge hardware and single-GPU developer workstations requires rigorous parameter-efficient fine-tuning (PEFT) of Small Language Models (SLMs) in the 1B to 8B parameter range. This report documents the empirical evaluation underlying SLMGen. We analyze LoRA rank sensitivity, 4-bit NormalFloat (NF4) quantization degradation, and dataset token hygiene heuristics across Phi-3.5, Llama-3.2, and Qwen-2.5 base models.",
+    "tags": [
+      "machine learning",
+      "slm",
+      "peft",
+      "lora",
+      "qlora"
+    ],
+    "date": "2026-10-10"
+  },
+  {
+    "type": "research",
+    "title": "Adaptive Work-Stealing Scheduling & NUMA Affinity in Rust Task Runtimes",
+    "slug": "/research/adaptive-work-stealing-numa-rust",
+    "subtitle": "Systems Experiment · VEDA-RES-2026-003",
+    "excerpt": "Parallel task scheduling across modern multi-socket hardware encounters severe throughput degradation from cross-NUMA interconnect contention and false cache-line sharing. We present the design of Veda, a high-performance Rust parallel execution runtime implementing an adaptive work-stealing algorithm with NUMA node affinity pinning. Empirical benchmarks on 32-core and 64-core topologies demonstrate up to a 2.4x reduction in task dispatch latency compared to naive work-stealing.",
+    "tags": [
+      "concurrency",
+      "rust",
+      "work-stealing",
+      "numa",
+      "lock-free"
+    ],
+    "date": "2026-10-04"
+  },
+  {
+    "type": "research",
+    "title": "Empirical Verification in Terminal AI Runtimes: Non-Bypassable Policy Gates and Isolated Sandboxing",
+    "slug": "/research/empirical-verification-terminal-runtimes",
+    "subtitle": "Technical Report · M31A-RES-2026-002",
+    "excerpt": "This technical report presents the design and empirical evaluation of the verification engine within M31A. We investigate the failure modes of ambient shell execution in language model agents, analyze process isolation mechanisms across Linux cgroups v2 and macOS Seatbelt, and benchmark a two-phase SQLite WAL crash-recovery architecture capable of restoring consistent workspace states following abnormal process termination.",
+    "tags": [
+      "systems security",
+      "terminal runtime",
+      "cgroups v2",
+      "crash recovery",
+      "empirical verification"
+    ],
+    "date": "2026-09-28"
+  },
+  {
+    "type": "research",
+    "title": "Towards Autonomous Development Systems: A Research Framework",
+    "slug": "/research/towards-autonomous-development-systems",
+    "subtitle": "Research Framework · TIV-RES-2026-001",
+    "excerpt": "We propose a research framework for autonomous software development systems — computational runtimes capable of reasoning over, modifying, and verifying complex software repositories under strict safety guarantees. We define the problem space separating conversational assistants from sovereign execution runtimes, formalize an 11-stage non-bypassable policy gating model, and introduce empirical verification criteria where language model assertions are treated as untrusted until mathematically and observationally proven.",
+    "tags": [
+      "autonomous systems",
+      "runtime governance",
+      "policy gating",
+      "systems engineering",
+      "software agents"
+    ],
+    "date": "2026-09-12"
+  },
+  {
+    "type": "journal",
+    "title": "Engineering OpenMail: Modern Self-Hosted Mail Infrastructure with Zero-CLI Configuration",
+    "slug": "/journal/self-hosting-modern-webmail-openmail",
+    "subtitle": "Developer Infrastructure · 2 min read",
+    "excerpt": "Why self-hosted email infrastructure remains essential for digital sovereignty, and how OpenMail bridges legacy IMAP/SMTP protocols with modern reactive web ergonomics.",
+    "tags": [
+      "infrastructure",
+      "email",
+      "self-hosting",
+      "openmail",
+      "php"
+    ],
+    "date": "2026-10-15"
+  },
+  {
+    "type": "journal",
+    "title": "High-Performance Concurrency in Rust: Lessons from Building Veda and Polaris",
+    "slug": "/journal/high-performance-rust-allocators-and-concurrency",
+    "subtitle": "Rust & Concurrency · 3 min read",
+    "excerpt": "Practical lessons learned building low-latency parallel runtimes, lock-free work-stealing deques, and declarative procedural macro engines in production Rust.",
+    "tags": [
+      "rust",
+      "concurrency",
+      "distributed-systems",
+      "lock-free",
+      "proc-macros"
+    ],
+    "date": "2026-10-12"
+  },
+  {
+    "type": "journal",
+    "title": "Why Chatbots Fail at Coding: Enforcing Deterministic Policy Gates in Autonomous Agents",
+    "slug": "/journal/deterministic-policy-gates-for-ai-coding",
+    "subtitle": "Autonomous Agents · 3 min read",
+    "excerpt": "Why prompt engineering alone cannot secure AI coding agents, and how compiled AST verification and non-bypassable policy gates turn unpredictable model outputs into reliable repository mutations.",
+    "tags": [
+      "ai-safety",
+      "policy-gates",
+      "ast",
+      "tree-sitter",
+      "compiler-verification"
+    ],
+    "date": "2026-10-08"
+  },
+  {
+    "type": "journal",
+    "title": "Designing Kyro: Local-First Desktop Automation with Tauri v2, Rust, and MCP",
+    "slug": "/journal/designing-zero-trust-desktop-agents-kyro",
+    "subtitle": "Systems Engineering · 3 min read",
+    "excerpt": "How we built Kyro, a local-first autonomous desktop AI agent that bridges screen understanding and real computer use with zero-trust local SQLite privacy and OS Keyring security.",
+    "tags": [
+      "tauri",
+      "rust",
+      "desktop-agents",
+      "mcp",
+      "security"
+    ],
+    "date": "2026-10-02"
+  },
+  {
+    "type": "journal",
+    "title": "Architecting Snigdha OS: Custom Kernel Switching, Minimal Arch Base, and i3wm Workstation Ergonomics",
+    "slug": "/journal/snigdha-os-custom-linux-engineering",
+    "subtitle": "Linux Engineering · 3 min read",
+    "excerpt": "How we engineered an Arch-based Linux ecosystem tailored for developer productivity, systems programming, and penetration testing, featuring custom kernel tooling and automated PKGBUILD pipelines.",
+    "tags": [
+      "linux",
+      "arch-linux",
+      "snigdha-os",
+      "kernel",
+      "i3wm"
+    ],
+    "date": "2026-09-24"
+  },
+  {
+    "type": "journal",
+    "title": "Inside M31A: Building a Rust-Native Autonomous Engineering Runtime",
+    "slug": "/journal/building-m31a-runtime-architecture",
+    "subtitle": "Autonomous Agents · 3 min read",
+    "excerpt": "A comprehensive architectural breakdown of M31A, explaining why intelligence is not authority, how the 10-tier downward module hierarchy functions, and how two-phase SQLite recovery prevents workspace corruption.",
+    "tags": [
+      "rust",
+      "m31a",
+      "autonomous-agents",
+      "ratatui",
+      "systems-architecture"
+    ],
+    "date": "2026-09-18"
+  },
+  {
+    "type": "project",
+    "title": "M31A (M31 Autonomous)",
+    "slug": "/projects/m31a",
+    "subtitle": "Autonomous Systems · v0.1.5 · Active Runtime",
+    "excerpt": "A Rust-native autonomous software-engineering runtime that executes high-level engineering objectives in your terminal while enforcing non-bypassable policy gates and multi-tier empirical verification.",
+    "tags": [
+      "Rust (Edition 2021 / 1.85+)",
+      "Ratatui & Crossterm for terminal UI",
+      "SQLite (rusqlite) for atomic transaction persistence",
+      "NVIDIA NIM (Nemotron-3-Ultra, Llama-3.3-70b, DeepSeek-R1)",
+      "Linux cgroups v2 / POSIX rlimits / macOS Seatbelt",
+      "Custom DAG planner with topological wave parallelization"
+    ],
+    "date": "2026-10-01"
+  },
+  {
+    "type": "project",
+    "title": "Snigdha OS",
+    "slug": "/projects/snigdha-os",
+    "subtitle": "Operating Systems · Rolling Release · Active Ecosystem",
+    "excerpt": "An Arch-based Linux ecosystem engineered for lightweight performance, developer productivity, custom package management, and robust kernel tooling.",
+    "tags": [
+      "Arch Linux Base with Rolling Release snapshotting",
+      "Linux Kernel (Zen / LTS / Custom)",
+      "Rust for core system helper utilities",
+      "Bash / POSIX Shell for init and automation scripts",
+      "i3wm tiling window manager with customized status bar",
+      "Tonmoy Infrastructure continuous package mirrors"
+    ],
+    "date": "2026-10-01"
+  },
+  {
+    "type": "project",
+    "title": "Kyro",
+    "slug": "/projects/kyro",
+    "subtitle": "Autonomous Systems · v0.1.0 · In Development",
+    "excerpt": "A high-performance, local-first autonomous desktop AI agent that bridges natural language reasoning with real computer interaction, zero-trust local privacy, and Model Context Protocol (MCP) integrations.",
+    "tags": [
+      "Rust 1.75+ native backend",
+      "Tauri v2 desktop runtime",
+      "React 19 & TypeScript frontend",
+      "SQLite (WAL mode) with rusqlite",
+      "OS Keyring integration (keyring-rs)",
+      "Model Context Protocol (MCP) JSON-RPC client"
+    ],
+    "date": "2026-10-01"
+  },
+  {
+    "type": "project",
+    "title": "Runstead",
+    "slug": "/projects/runstead",
+    "subtitle": "Commercial Software · Active Development",
+    "excerpt": "A modern, investor-ready SaaS alternative to WHMCS and fragmented hosting management tools, unifying customer management, recurring billing, DNS zones, and support workflows into a single cohesive platform.",
+    "tags": [
+      "TypeScript",
+      "Next.js App Router",
+      "Tailwind CSS",
+      "PostgreSQL / Supabase"
+    ],
+    "date": "2026-10-01"
+  },
+  {
+    "type": "project",
+    "title": "SLMGen",
+    "slug": "/projects/slmgen",
+    "subtitle": "AI & Tooling · Experimental Tooling",
+    "excerpt": "Tooling and pipelines for fine-tuning small language models (SLMs) with dataset analysis, explainable model recommendation, and automated Google Colab notebook synthesis.",
+    "tags": [
+      "TypeScript",
+      "Next.js",
+      "Python",
+      "Hugging Face Transformers & PEFT",
+      "Bitsandbytes (QLoRA)"
+    ],
+    "date": "2026-10-01"
+  },
+  {
+    "type": "project",
+    "title": "Polaris",
+    "slug": "/projects/polaris",
+    "subtitle": "Systems & Infrastructure · v0.1.0 · crates.io",
+    "excerpt": "A Rust-native distributed task orchestration engine featuring cluster state consensus, declarative procedural macros, and low-latency task scheduling across heterogeneous worker nodes.",
+    "tags": [
+      "Rust (Tokio async runtime)",
+      "Syn & Quote (Rust procedural macros)",
+      "Crates.io packaging pipeline"
+    ],
+    "date": "2026-10-01"
+  },
+  {
+    "type": "project",
+    "title": "Veda",
+    "slug": "/projects/veda",
+    "subtitle": "Systems & Infrastructure · Active Library",
+    "excerpt": "A parallel execution runtime in Rust featuring adaptive work-stealing scheduling, lock-free queues, and NUMA-aware thread affinity for compute-intensive pipelines.",
+    "tags": [
+      "Rust",
+      "Atomic primitives",
+      "POSIX thread affinity",
+      "Benchmark harnesses"
+    ],
+    "date": "2026-10-01"
+  },
+  {
+    "type": "project",
+    "title": "Octate",
+    "slug": "/projects/octate",
+    "subtitle": "AI & Tooling · Active Development",
+    "excerpt": "A terminal-native AI code review CLI that combines local Tree-sitter WASM AST parsing, cross-file reference graphs, and static linter discovery with multi-stage LLM review DAGs and a two-stage critic quality gate.",
+    "tags": [
+      "Rust",
+      "Tree-sitter",
+      "WASM",
+      "LLM APIs"
+    ],
+    "date": "2026-10-01"
+  },
+  {
+    "type": "project",
+    "title": "OpenMail",
+    "slug": "/projects/openmail",
+    "subtitle": "Commercial Software · Active Project",
+    "excerpt": "A modern, self-hosted webmail client featuring a zero-CLI setup wizard, IMAP/SMTP mail server compatibility, clean typography, and sovereign privacy.",
+    "tags": [
+      "PHP",
+      "Livewire",
+      "Tailwind CSS",
+      "IMAP / SMTP protocols"
+    ],
+    "date": "2026-10-01"
+  },
+  {
+    "type": "project",
+    "title": "Linux Desktop & i3 Workstation",
+    "slug": "/projects/i3wm-desktop",
+    "subtitle": "Developer Environment · Production Environment",
+    "excerpt": "A keyboard-driven Linux workstation configuration tailored for systems development, multi-monitor tiling, low latency, and zero distraction.",
+    "tags": [
+      "i3wm",
+      "Bash",
+      "X11 / Compositor",
+      "Alacritty / Kitty",
+      "Polybar"
+    ],
+    "date": "2026-10-01"
+  }
+]

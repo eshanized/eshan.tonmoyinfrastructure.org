@@ -1,0 +1,158 @@
+---
+slug: "towards-autonomous-development-systems"
+title: "Towards Autonomous Development Systems: A Research Framework"
+identifier: "TIV-RES-2026-001"
+type: "Research Framework"
+status: "Published"
+area: "Autonomous Systems"
+date: "2026-09-12"
+updatedAt: "2026-10-15"
+version: "1.1"
+featured: true
+draft: false
+projectSlug: "m31a"
+repositoryUrl: "https://github.com/eshanized/M31A"
+abstract: "We propose a research framework for autonomous software development systems — computational runtimes capable of reasoning over, modifying, and verifying complex software repositories under strict safety guarantees. We define the problem space separating conversational assistants from sovereign execution runtimes, formalize an 11-stage non-bypassable policy gating model, and introduce empirical verification criteria where language model assertions are treated as untrusted until mathematically and observationally proven."
+authors:
+  - name: "Eshan Roy"
+    role: "Principal Systems Architect"
+    affiliation: "Tonmoy Infrastructure and Vision"
+    url: "https://eshan.tonmoyinfrastructure.org"
+    handle: "eshanized"
+tags:
+  - "autonomous systems"
+  - "runtime governance"
+  - "policy gating"
+  - "systems engineering"
+  - "software agents"
+bibtex: |
+  @article{roy2026autonomous,
+    title={Towards Autonomous Development Systems: A Research Framework},
+    author={Roy, Eshan},
+    journal={Tonmoy Infrastructure & Vision Technical Reports},
+    volume={1},
+    number={TIV-RES-2026-001},
+    year={2026},
+    month={September},
+    url={https://eshan.tonmoyinfrastructure.org/research/towards-autonomous-development-systems}
+  }
+references:
+  - id: "1"
+    title: "M31A: High-Assurance Rust-Native Autonomous Software Engineering Runtime"
+    authors: ["Eshan Roy"]
+    year: 2026
+    venue: "Tonmoy Infrastructure and Vision Technical Specifications"
+    url: "https://m31a.tonmoyinfrastructure.org/"
+  - id: "2"
+    title: "OWASP Application Security Verification Standard (ASVS) 4.0"
+    authors: ["OWASP Foundation"]
+    year: 2021
+    venue: "OWASP Foundation Standards"
+    url: "https://owasp.org/www-project-application-security-verification-standard/"
+  - id: "3"
+    title: "Tree-sitter: An Incremental Parsing System for Programming Tools"
+    authors: ["Max Brunsfeld"]
+    year: 2018
+    venue: "GitHub Engineering Publications"
+    url: "https://tree-sitter.github.io/"
+---
+
+## 1. Executive Summary
+
+Autonomous software engineering requires transitioning from conversational code-generation chatbots to sovereign, policy-governed runtime engines. When a language model directly drives an interactive developer shell with ambient operating system credentials, safety relies entirely on probabilistic self-restraint. In real-world software repositories, this unconstrained execution paradigm routinely results in destructive mutations, secret leakage, hallucinated build successes, and unrecoverable workspace corruption.
+
+In this research framework, we formalize the separation of concerns between reasoning and authority:
+
+> **Core Axiom:** Intelligence is not authority. A language model is an untrusted reasoning component proposing structured candidate mutations. Authority resides exclusively within a deterministic, compiled runtime that validates policy, confines execution, and verifies empirical outcomes.
+
+```
++-------------------------------------------------------------+
+|                UNTRUSTED REASONING ENGINE                   |
+|               (LLM / Vision-Language Model)                 |
++-------------------------------------------------------------+
+                              |
+                              | Proposed Action Manifest
+                              v
++-------------------------------------------------------------+
+|              11-STAGE NON-BYPASSABLE POLICY GATE             |
+|   (Path Bounds, AST Checks, Secret Scanning, Rate Limits)   |
++-------------------------------------------------------------+
+                              |
+                              | Permitted Mutation
+                              v
++-------------------------------------------------------------+
+|                ISOLATED EXECUTION SANDBOX                   |
+|         (cgroups v2, Namespaces, POSIX rlimits)             |
++-------------------------------------------------------------+
+                              |
+                              | Observation & State Diff
+                              v
++-------------------------------------------------------------+
+|               EMPIRICAL VERIFICATION ENGINE                 |
+|       (Compiler Diagnostics, Test Suites, SHA-256 Digest)    |
++-------------------------------------------------------------+
+```
+
+---
+
+## 2. Problem Formalization
+
+Consider a repository workspace $W = (F, G, T)$ where:
+- $F = \{f_1, f_2, \dots, f_n\}$ represents the set of tracked file entities and contents.
+- $G$ represents the directed dependency and symbol call graph.
+- $T$ represents the automated test and validation harness.
+
+An autonomous mission is initiated with a high-level natural language specification $S$. A conventional agent produces a sequence of unverified shell executions:
+
+$$\mathcal{A}_{\text{naive}}: S \times W_t \to \text{exec}(\text{shell\_command}) \to W_{t+1}$$
+
+Because the shell command possesses ambient authority, any hallucinated command (e.g. `rm -rf`, editing `.env` or system configs) executes immediately.
+
+In our framework, the agent is constrained to produce candidate intent objects $I_t \in \mathcal{I}$, which must pass through a predicate function $\mathcal{P}_{\text{policy}}(I_t, W_t) \to \{\text{ALLOW}, \text{DENY}, \text{ASK}\}$ before entering a confined execution sandbox:
+
+$$\mathcal{A}_{\text{governed}}: (S, W_t) \xrightarrow{\text{LLM}} I_t \xrightarrow{\mathcal{P}} \begin{cases} 
+\text{exec}_{\text{sandbox}}(I_t) & \text{if } \mathcal{P} = \text{ALLOW} \\
+\bot & \text{if } \mathcal{P} = \text{DENY} \\
+\text{operator\_prompt}(I_t) & \text{if } \mathcal{P} = \text{ASK}
+\end{cases}$$
+
+---
+
+## 3. The 11-Stage Non-Bypassable Policy Gate
+
+The policy engine implements an immutable sequential evaluation pipeline. Every candidate mutation must satisfy all eleven stages before any file write or process spawn occurs:
+
+| Stage | Gate Check | Failure Action | Security Rationale |
+| :--- | :--- | :--- | :--- |
+| **01** | Path Traversal Boundary | `DENY` | Prevents writes outside the repository root (`../`, absolute `/etc`) |
+| **02** | Sensitive File Blacklist | `DENY` | Protects `.env`, `.git/config`, private keys, SSH certificates |
+| **03** | AST Parse Validation | `DENY` | Rejects syntax-invalid edits before committing to disk |
+| **04** | Secret & Token Scanning | `DENY` | Scrubs API keys, bearer tokens, and credentials via entropy heuristics |
+| **05** | Write Volume Quota | `ASK` | Halts multi-megabyte bulk rewrites that indicate model loops |
+| **06** | Network Destination Scope | `DENY` | Blocks outbound connections to unauthorized IPs or domains |
+| **07** | Subprocess Execution Whitelist | `DENY` | Restricts spawned binaries to approved toolchains (`cargo`, `npm`, `git`) |
+| **08** | Destructive Command Filter | `DENY` | Rejects `rm -rf`, `git reset --hard`, and unrecoverable commands |
+| **09** | Concurrency Lock Verification | `ASK` | Prevents race conditions with external developer edits |
+| **10** | Resource Budget Constraints | `DENY` | Enforces CPU time and memory rlimits on sub-processes |
+| **11** | Human-in-the-Loop Threshold | `ASK` | Prompts operator when proposed diff touches critical architectural files |
+
+---
+
+## 4. Empirical Verification Criteria
+
+A primary failure mode of generative agents is **false completion declaration**: the model states "I have resolved the bug and all tests pass," despite never running the compiler or test suite.
+
+Under our empirical verification protocol, a mission cannot transition to `COMPLETED` based on model output. The state transition requires a cryptographic verification bundle containing:
+
+1. **Zero Diagnostic Errors**: Compiler / linter exits with code 0 and an empty error stream.
+2. **Deterministic Test Verification**: All pre-existing and newly added test targets pass within the isolated sandbox container.
+3. **Repository Clean State**: Unintended artifact files are purged, and the working directory matches the intended DAG delta.
+4. **SHA-256 State Manifest**: A cryptographic digest over the post-mutation repository tree is signed and committed to the SQLite audit journal.
+
+---
+
+## 5. Architectural Implementation in M31A
+
+This framework is implemented in production within **M31A** (`m31a.tonmoyinfrastructure.org`), a Rust-native autonomous software-engineering runtime. M31A structures execution across 10 downward layers (L0 to L9), ensuring lower-level sandboxing, process confinement, and database persistence cannot be corrupted by upper-layer agent logic.
+
+Future research tracks investigate multi-session planning across distributed repositories, formal verification of policy gate predicates using SMT solvers, and zero-knowledge evidence proofs for autonomous pull requests.

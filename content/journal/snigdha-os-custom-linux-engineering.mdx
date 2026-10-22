@@ -1,0 +1,91 @@
+---
+slug: "snigdha-os-custom-linux-engineering"
+title: "Architecting Snigdha OS: Custom Kernel Switching, Minimal Arch Base, and i3wm Workstation Ergonomics"
+description: "How we engineered an Arch-based Linux ecosystem tailored for developer productivity, systems programming, and penetration testing, featuring custom kernel tooling and automated PKGBUILD pipelines."
+date: "2026-09-24"
+updatedAt: "2026-10-12"
+category: "Linux Engineering"
+tags: ["linux", "arch-linux", "snigdha-os", "kernel", "i3wm"]
+featured: true
+draft: false
+relatedProjectSlug: "snigdha-os"
+author:
+  name: "Eshan Roy"
+  role: "Lead Architect, Snigdha OS"
+  affiliation: "Tonmoy Infrastructure and Vision"
+  url: "https://eshan.tonmoyinfrastructure.org"
+  handle: "eshanized"
+references:
+  - id: "1"
+    title: "Snigdha OS Organization Repositories"
+    authors: ["Snigdha OS Core Team"]
+    year: 2026
+    venue: "github.com/Snigdha-OS"
+    url: "https://github.com/Snigdha-OS"
+---
+
+## 1. The Developer Operating System Dilemma
+
+Modern desktop operating systems consume gigabytes of RAM simply idling on a blank desktop. Commercial distributions ship invasive telemetry agents, background indexing daemons, and forced software update loops that interrupt active development workflows.
+
+When building systems software in Rust or C, developers require three fundamental operating system guarantees:
+1. **Low Latency & Zero Telemetry**: Every CPU cycle should be dedicated to compilation and testing, not background advertising engines.
+2. **Access to Bleeding-Edge Toolchains**: Fast access to the newest Linux kernel drivers, compiler toolchains, and hardware acceleration libraries without waiting 6–12 months for distribution releases.
+3. **Deterministic System Packaging**: Predictable, transparent package definitions where every binary can be audited, recompiled, and modified via plain-text PKGBUILD scripts.
+
+This led to the creation of **Snigdha OS** (`github.com/Snigdha-OS`).
+
+---
+
+## 2. Arch Linux as the Rolling Foundation
+
+We chose an Arch Linux base for its rolling release model and minimal baseline philosophy. However, traditional Arch installations require hours of manual setup, partitioning, font rendering configuration, and display server troubleshooting.
+
+Snigdha OS packages this into an engineered, reproducible ecosystem:
+- **`snigdhaos-core`**: A stripped-down, highly tuned base system image with optimized systemd service defaults, zram swap compression, and aggressive memory management.
+- **`snigdhaos-pkgbuilds`**: A dedicated repository mirror maintained by Tonmoy Infrastructure, providing continuous builds for developer utilities, security tools, and tiling window managers.
+
+---
+
+## 3. Custom Kernel Switching Framework
+
+Systems developers frequently need to switch between different Linux kernel variations depending on their workload:
+- **Linux Zen Kernel**: Tuned for desktop interactivity, low audio/display latency, and high responsiveness.
+- **Linux LTS Kernel**: Long-Term Support kernel for maximum hardware stability and server workloads.
+- **Linux Hardened Kernel**: Security-focused kernel with enhanced ASLR, restricted ptrace, and disabled unprivileged user namespaces.
+
+To eliminate the manual editing of GRUB configs and mkinitcpio hooks, we built **`snigdhaos-kernel-switcher`** in Rust:
+
+```bash
+# List available kernels and active bootloader entries
+snigdhaos-kernel-switcher --list
+
+# Switch default boot target to Zen kernel
+sudo snigdhaos-kernel-switcher --set linux-zen
+
+# Automatically regenerate bootloader configuration
+sudo snigdhaos-kernel-switcher --apply
+```
+
+The tool inspects `/boot`, verifies kernel signature integrity, automatically manages initramfs generation via `mkinitcpio`, and updates systemd-boot or GRUB without corrupting boot records.
+
+---
+
+## 4. Keyboard-First i3wm Workstation Ergonomics
+
+A core aspect of the Snigdha OS experience is our custom **i3wm tiling configuration** (`github.com/eshanized/i3wm`).
+
+In a standard floating desktop (GNOME or Windows), developers waste minutes per hour dragging window borders, minimizing overlapping windows, and searching through taskbars.
+
+Our i3 setup enforces deterministic tiling geometry:
+- **Dual-head workspace binding**: Code editor on Workspace 1 (Primary display), terminals and compiler logs on Workspace 2 (Secondary display), documentation on Workspace 3.
+- **Sub-200MB Idle RAM Footprint**: Leaving >98% of system memory available for large rustc compilation runs and local LLM inference.
+- **Alacritty & Kitty GPU Acceleration**: Zero-latency terminal emulator rendering paired with JetBrains Mono and Fira Sans fonts.
+
+---
+
+## 5. Conclusion
+
+Snigdha OS represents an ongoing commitment to open-source software autonomy. By owning the operating environment from the kernel layer up to the window manager, we ensure our development infrastructure remains fast, predictable, and free from external platform lock-in.
+
+Check out the project repositories at [github.com/Snigdha-OS](https://github.com/Snigdha-OS).

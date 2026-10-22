@@ -1,0 +1,102 @@
+---
+slug: "deterministic-policy-gates-for-ai-coding"
+title: "Why Chatbots Fail at Coding: Enforcing Deterministic Policy Gates in Autonomous Agents"
+description: "Why prompt engineering alone cannot secure AI coding agents, and how compiled AST verification and non-bypassable policy gates turn unpredictable model outputs into reliable repository mutations."
+date: "2026-10-08"
+updatedAt: "2026-10-17"
+category: "Autonomous Agents"
+tags: ["ai-safety", "policy-gates", "ast", "tree-sitter", "compiler-verification"]
+featured: false
+draft: false
+relatedProjectSlug: "octate"
+author:
+  name: "Eshan Roy"
+  role: "Principal Systems Architect"
+  affiliation: "Tonmoy Infrastructure and Vision"
+  url: "https://eshan.tonmoyinfrastructure.org"
+  handle: "eshanized"
+references:
+  - id: "1"
+    title: "Tree-sitter WASM Multi-Language Parsing"
+    authors: ["Max Brunsfeld"]
+    year: 2022
+    venue: "GitHub Research"
+    url: "https://tree-sitter.github.io/"
+---
+
+## 1. The Fallacy of System Prompts
+
+A common design pattern in generative AI tooling is instructing the model via system prompt:
+
+> *"You are a careful software engineer. Do not modify files outside `src/`. Never delete files. Always write valid TypeScript."*
+
+This approach fails in production because **natural language prompts cannot enforce security boundaries**. Under complex task descriptions, long context windows, or deliberate prompt injections, language models frequently disobey conversational instructions.
+
+If an agent can execute arbitrary shell commands or write directly to the filesystem, security is compromised. The solution is not better prompts — it is **deterministic software architecture**.
+
+---
+
+## 2. Tree-sitter AST Pre-Validation
+
+In **Octate** (`github.com/eshanized/Octate`) and **M31A**, we implement local Abstract Syntax Tree (AST) pre-validation using **Tree-sitter WASM**.
+
+Before any candidate code modification proposed by an LLM is accepted by the runtime:
+1. The proposed diff is applied to an in-memory virtual syntax tree.
+2. Tree-sitter incrementally parses the modified file.
+3. If the syntax tree contains `ERROR` or `MISSING` nodes, the mutation is rejected immediately at the runtime level.
+
+```rust
+// Simplified Tree-sitter AST Verification in Rust
+pub fn verify_ast_integrity(source_code: &str, language: &Language) -> Result<(), PolicyViolation> {
+    let mut parser = Parser::new();
+    parser.set_language(language)?;
+    
+    let tree = parser.parse(source_code, None)
+        .ok_or(PolicyViolation::SyntaxParseFailed)?;
+        
+    let root_node = tree.root_node();
+    if root_node.has_error() {
+        let error_span = find_first_error_span(root_node);
+        return Err(PolicyViolation::SyntaxErrorAtSpan(error_span));
+    }
+    
+    Ok(())
+}
+```
+
+By catching syntax errors before disk writes, we prevent the model from entering destructive circular repair loops where it breaks working imports while attempting to fix an unrelated logic bug.
+
+---
+
+## 3. The ALLOW / DENY / ASK State Machine
+
+Rather than binary execution, our policy gate evaluates mutations against a three-state transition matrix:
+
+```
+                          [Proposed Mutation]
+                                   |
+                                   v
+                      +-------------------------+
+                      |   11-Stage Policy Gate  |
+                      +-------------------------+
+                               /   |   \
+                     ALLOW    /    |    \    DENY
+                             /     |     \
+                            v      |      v
+                   [Apply to Staging]  [Immediate Halt & Rejection]
+                                   |
+                                  ASK
+                                   |
+                                   v
+                   [Human Operator Prompt with Diff]
+```
+
+- **`ALLOW`**: Low-risk operations within approved subtrees (e.g., editing unit tests in `tests/`, compiling release targets).
+- **`DENY`**: Invariant violations (e.g., modifying files matching `.env*`, executing unauthorized network binaries, path traversals). These halt execution immediately and return structured diagnostics to the agent.
+- **`ASK`**: High-impact architectural changes (e.g., modifying database schema migrations, altering public API interfaces, running git push). The runtime pauses execution and renders an interactive diff in the developer's terminal for explicit approval.
+
+---
+
+## 4. Conclusion
+
+Treating language models as untrusted reasoning modules bounded by deterministic, compiled software guarantees transforms fragile AI experiments into dependable engineering infrastructure.

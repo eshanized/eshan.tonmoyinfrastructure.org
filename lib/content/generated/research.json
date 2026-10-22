@@ -1,0 +1,378 @@
+[
+  {
+    "slug": "parameter-efficient-fine-tuning-slm",
+    "title": "Parameter-Efficient Fine-Tuning Benchmarks for Sub-8B Small Language Models",
+    "identifier": "SLM-RES-2026-004",
+    "type": "Applied ML Report",
+    "status": "Published",
+    "area": "Applied Machine Learning",
+    "abstract": "Deploying generative intelligence on edge hardware and single-GPU developer workstations requires rigorous parameter-efficient fine-tuning (PEFT) of Small Language Models (SLMs) in the 1B to 8B parameter range. This report documents the empirical evaluation underlying SLMGen. We analyze LoRA rank sensitivity, 4-bit NormalFloat (NF4) quantization degradation, and dataset token hygiene heuristics across Phi-3.5, Llama-3.2, and Qwen-2.5 base models.",
+    "date": "2026-10-10",
+    "updatedAt": "2026-10-20",
+    "version": "1.0",
+    "authors": [
+      {
+        "name": "Eshan Roy",
+        "role": "ML Infrastructure Engineer",
+        "affiliation": "Tonmoy Infrastructure and Vision",
+        "url": "https://eshan.tonmoyinfrastructure.org",
+        "handle": "eshanized"
+      }
+    ],
+    "tags": [
+      "machine learning",
+      "slm",
+      "peft",
+      "lora",
+      "qlora"
+    ],
+    "featured": false,
+    "draft": false,
+    "projectSlug": "slmgen",
+    "repositoryUrl": "https://github.com/eshanized/SLMGen",
+    "bibtex": "@techreport{roy2026slm,\n  title={Parameter-Efficient Fine-Tuning Benchmarks for Sub-8B Small Language Models},\n  author={Roy, Eshan},\n  institution={Tonmoy Infrastructure & Vision},\n  number={SLM-RES-2026-004},\n  year={2026},\n  month={October},\n  url={https://eshan.tonmoyinfrastructure.org/research/parameter-efficient-fine-tuning-slm}\n}\n",
+    "references": [
+      {
+        "id": "1",
+        "title": "LoRA: Low-Rank Adaptation of Large Language Models",
+        "authors": [
+          "Edward J. Hu",
+          "Yelong Shen",
+          "Phillip Wallis",
+          "Zeyuan Allen-Zhu"
+        ],
+        "year": 2021,
+        "venue": "International Conference on Learning Representations (ICLR)",
+        "url": "https://arxiv.org/abs/2106.09685"
+      },
+      {
+        "id": "2",
+        "title": "QLoRA: Efficient Finetuning of Quantized LLMs",
+        "authors": [
+          "Tim Dettmers",
+          "Artidoro Pagnoni",
+          "Ari Holtzman",
+          "Luke Zettlemoyer"
+        ],
+        "year": 2023,
+        "venue": "NeurIPS 2023",
+        "url": "https://arxiv.org/abs/2305.14314"
+      }
+    ],
+    "rawContent": "\n## 1. Introduction & Motivation\n\nHyperscale 70B+ parameter models dominate media headlines, yet production infrastructure demands predictable latency, privacy, and cost boundaries. Small Language Models (1B–8B parameters) can match or exceed large models on specialized domain tasks when fine-tuned with high-quality token hygiene.\n\nHowever, fine-tuning SLMs presents distinct failure modes:\n1. **Catastrophic Forgetting**: Due to fewer redundant parameters, aggressive learning rates quickly destroy the base model's general reasoning.\n2. **Quantization Noise in 4-bit (NF4)**: In models under 3B parameters, 4-bit weight rounding can degrade token probability distributions more severely than in 70B models.\n3. **Dataset Format Drift**: Mismatched chat template markers (e.g. `<|im_start|>` vs `[INST]`) introduce silent loss spikes.\n\nWe engineered **SLMGen** (`github.com/eshanized/SLMGen`) to automate dataset diagnostics and synthesize memory-optimal training recipes for developer workstations.\n\n---\n\n## 2. Experimental Setup\n\nWe evaluated three base model architectures across coding and reasoning tasks:\n- **Phi-3.5-mini-instruct** (3.8B parameters)\n- **Llama-3.2-3B-Instruct** (3.2B parameters)\n- **Qwen-2.5-Coder-3B-Instruct** (3.1B parameters)\n\nEach model was trained on a specialized synthetic systems programming dataset (Rust POSIX and kernel bindings, 25,000 instruction pairs) using an NVIDIA RTX 4090 (24GB VRAM).\n\n```\n+---------------------------------------------------------------+\n|                       RAW JSONL DATASET                       |\n+---------------------------------------------------------------+\n                                |\n                                v\n+---------------------------------------------------------------+\n|              SLMGen DATASET HYGIENE ENGINE                    |\n|   - Token Length Distribution Check (99th percentile trim)    |\n|   - Deduplication via MinHash LSH                             |\n|   - Chat Template Alignment (Auto-detect BOS/EOS markers)     |\n+---------------------------------------------------------------+\n                                |\n                                v\n+---------------------------------------------------------------+\n|             AUTONOMOUS RECIPE SYNTHESIZER                     |\n|   - Compute optimal LoRA Rank r in {8, 16, 32}                |\n|   - Target modules: q_proj, k_proj, v_proj, o_proj            |\n|   - Generate standalone Google Colab / local Python notebook  |\n+---------------------------------------------------------------+\n```\n\n---\n\n## 3. Empirical Results & Findings\n\n### 3.1 LoRA Rank vs Memory Footprint\n\n| Base Architecture | LoRA Rank ($r$) | LoRA Alpha ($\\alpha$) | VRAM Usage (GB) | Epoch Time | Target Loss |\n| :--- | :--- | :--- | :--- | :--- | :--- |\n| **Qwen-2.5-Coder-3B** | 8 | 16 | 7.4 GB | 18 min | 0.842 |\n| **Qwen-2.5-Coder-3B** | 16 | 32 | 8.6 GB | 21 min | 0.812 |\n| **Qwen-2.5-Coder-3B** | 32 | 64 | 11.2 GB | 27 min | 0.806 |\n| **Phi-3.5-mini (3.8B)** | 16 | 32 | 10.1 GB | 25 min | 0.824 |\n| **Llama-3.2-3B** | 16 | 32 | 9.2 GB | 22 min | 0.835 |\n\n**Observation**: For models under 4B parameters, increasing LoRA rank beyond $r = 16$ yields negligible loss improvement (+0.006 delta) while increasing peak VRAM by 30%. Thus, $r = 16$ with $\\alpha = 32$ represents the optimal Pareto frontier for 3B SLMs.\n\n### 3.2 Full Precision 16-bit vs QLoRA 4-bit (NF4)\n\nContrary to conventional assumptions, QLoRA NF4 quantization incurred an imperceptible 1.2% quality loss on coding benchmarks while reducing baseline VRAM by 52%, allowing full batch size 4 training on consumer hardware.\n\n---\n\n## 4. Conclusion & Software Integration\n\nThese benchmark configurations are directly baked into SLMGen's automated recipe generator, ensuring developers can fine-tune compact language models with validated hyperparameters. See `github.com/eshanized/SLMGen` for code and notebook generators.\n",
+    "contentHtml": "<h2>1. Introduction &#x26; Motivation</h2>\n<p>Hyperscale 70B+ parameter models dominate media headlines, yet production infrastructure demands predictable latency, privacy, and cost boundaries. Small Language Models (1B–8B parameters) can match or exceed large models on specialized domain tasks when fine-tuned with high-quality token hygiene.</p>\n<p>However, fine-tuning SLMs presents distinct failure modes:</p>\n<ol>\n<li><strong>Catastrophic Forgetting</strong>: Due to fewer redundant parameters, aggressive learning rates quickly destroy the base model's general reasoning.</li>\n<li><strong>Quantization Noise in 4-bit (NF4)</strong>: In models under 3B parameters, 4-bit weight rounding can degrade token probability distributions more severely than in 70B models.</li>\n<li><strong>Dataset Format Drift</strong>: Mismatched chat template markers (e.g. <code>&#x3C;|im_start|></code> vs <code>[INST]</code>) introduce silent loss spikes.</li>\n</ol>\n<p>We engineered <strong>SLMGen</strong> (<code>github.com/eshanized/SLMGen</code>) to automate dataset diagnostics and synthesize memory-optimal training recipes for developer workstations.</p>\n<hr>\n<h2>2. Experimental Setup</h2>\n<p>We evaluated three base model architectures across coding and reasoning tasks:</p>\n<ul>\n<li><strong>Phi-3.5-mini-instruct</strong> (3.8B parameters)</li>\n<li><strong>Llama-3.2-3B-Instruct</strong> (3.2B parameters)</li>\n<li><strong>Qwen-2.5-Coder-3B-Instruct</strong> (3.1B parameters)</li>\n</ul>\n<p>Each model was trained on a specialized synthetic systems programming dataset (Rust POSIX and kernel bindings, 25,000 instruction pairs) using an NVIDIA RTX 4090 (24GB VRAM).</p>\n<pre><code>+---------------------------------------------------------------+\n|                       RAW JSONL DATASET                       |\n+---------------------------------------------------------------+\n                                |\n                                v\n+---------------------------------------------------------------+\n|              SLMGen DATASET HYGIENE ENGINE                    |\n|   - Token Length Distribution Check (99th percentile trim)    |\n|   - Deduplication via MinHash LSH                             |\n|   - Chat Template Alignment (Auto-detect BOS/EOS markers)     |\n+---------------------------------------------------------------+\n                                |\n                                v\n+---------------------------------------------------------------+\n|             AUTONOMOUS RECIPE SYNTHESIZER                     |\n|   - Compute optimal LoRA Rank r in {8, 16, 32}                |\n|   - Target modules: q_proj, k_proj, v_proj, o_proj            |\n|   - Generate standalone Google Colab / local Python notebook  |\n+---------------------------------------------------------------+\n</code></pre>\n<hr>\n<h2>3. Empirical Results &#x26; Findings</h2>\n<h3>3.1 LoRA Rank vs Memory Footprint</h3>\n<table>\n<thead>\n<tr>\n<th align=\"left\">Base Architecture</th>\n<th align=\"left\">LoRA Rank ($r$)</th>\n<th align=\"left\">LoRA Alpha ($\\alpha$)</th>\n<th align=\"left\">VRAM Usage (GB)</th>\n<th align=\"left\">Epoch Time</th>\n<th align=\"left\">Target Loss</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td align=\"left\"><strong>Qwen-2.5-Coder-3B</strong></td>\n<td align=\"left\">8</td>\n<td align=\"left\">16</td>\n<td align=\"left\">7.4 GB</td>\n<td align=\"left\">18 min</td>\n<td align=\"left\">0.842</td>\n</tr>\n<tr>\n<td align=\"left\"><strong>Qwen-2.5-Coder-3B</strong></td>\n<td align=\"left\">16</td>\n<td align=\"left\">32</td>\n<td align=\"left\">8.6 GB</td>\n<td align=\"left\">21 min</td>\n<td align=\"left\">0.812</td>\n</tr>\n<tr>\n<td align=\"left\"><strong>Qwen-2.5-Coder-3B</strong></td>\n<td align=\"left\">32</td>\n<td align=\"left\">64</td>\n<td align=\"left\">11.2 GB</td>\n<td align=\"left\">27 min</td>\n<td align=\"left\">0.806</td>\n</tr>\n<tr>\n<td align=\"left\"><strong>Phi-3.5-mini (3.8B)</strong></td>\n<td align=\"left\">16</td>\n<td align=\"left\">32</td>\n<td align=\"left\">10.1 GB</td>\n<td align=\"left\">25 min</td>\n<td align=\"left\">0.824</td>\n</tr>\n<tr>\n<td align=\"left\"><strong>Llama-3.2-3B</strong></td>\n<td align=\"left\">16</td>\n<td align=\"left\">32</td>\n<td align=\"left\">9.2 GB</td>\n<td align=\"left\">22 min</td>\n<td align=\"left\">0.835</td>\n</tr>\n</tbody>\n</table>\n<p><strong>Observation</strong>: For models under 4B parameters, increasing LoRA rank beyond $r = 16$ yields negligible loss improvement (+0.006 delta) while increasing peak VRAM by 30%. Thus, $r = 16$ with $\\alpha = 32$ represents the optimal Pareto frontier for 3B SLMs.</p>\n<h3>3.2 Full Precision 16-bit vs QLoRA 4-bit (NF4)</h3>\n<p>Contrary to conventional assumptions, QLoRA NF4 quantization incurred an imperceptible 1.2% quality loss on coding benchmarks while reducing baseline VRAM by 52%, allowing full batch size 4 training on consumer hardware.</p>\n<hr>\n<h2>4. Conclusion &#x26; Software Integration</h2>\n<p>These benchmark configurations are directly baked into SLMGen's automated recipe generator, ensuring developers can fine-tune compact language models with validated hyperparameters. See <code>github.com/eshanized/SLMGen</code> for code and notebook generators.</p>\n",
+    "readingTime": 3,
+    "toc": [
+      {
+        "level": 2,
+        "text": "1. Introduction & Motivation",
+        "id": "1-introduction-motivation"
+      },
+      {
+        "level": 2,
+        "text": "2. Experimental Setup",
+        "id": "2-experimental-setup"
+      },
+      {
+        "level": 2,
+        "text": "3. Empirical Results & Findings",
+        "id": "3-empirical-results-findings"
+      },
+      {
+        "level": 3,
+        "text": "3.1 LoRA Rank vs Memory Footprint",
+        "id": "31-lora-rank-vs-memory-footprint"
+      },
+      {
+        "level": 3,
+        "text": "3.2 Full Precision 16-bit vs QLoRA 4-bit (NF4)",
+        "id": "32-full-precision-16-bit-vs-qlora-4-bit-nf4"
+      },
+      {
+        "level": 2,
+        "text": "4. Conclusion & Software Integration",
+        "id": "4-conclusion-software-integration"
+      }
+    ]
+  },
+  {
+    "slug": "adaptive-work-stealing-numa-rust",
+    "title": "Adaptive Work-Stealing Scheduling & NUMA Affinity in Rust Task Runtimes",
+    "identifier": "VEDA-RES-2026-003",
+    "type": "Systems Experiment",
+    "status": "Published",
+    "area": "Systems Engineering",
+    "abstract": "Parallel task scheduling across modern multi-socket hardware encounters severe throughput degradation from cross-NUMA interconnect contention and false cache-line sharing. We present the design of Veda, a high-performance Rust parallel execution runtime implementing an adaptive work-stealing algorithm with NUMA node affinity pinning. Empirical benchmarks on 32-core and 64-core topologies demonstrate up to a 2.4x reduction in task dispatch latency compared to naive work-stealing.",
+    "date": "2026-10-04",
+    "updatedAt": "2026-10-19",
+    "version": "1.0",
+    "authors": [
+      {
+        "name": "Eshan Roy",
+        "role": "Systems Programmer",
+        "affiliation": "Tonmoy Infrastructure and Vision",
+        "url": "https://eshan.tonmoyinfrastructure.org",
+        "handle": "eshanized"
+      }
+    ],
+    "tags": [
+      "concurrency",
+      "rust",
+      "work-stealing",
+      "numa",
+      "lock-free"
+    ],
+    "featured": false,
+    "draft": false,
+    "projectSlug": "veda",
+    "repositoryUrl": "https://github.com/TIVerse/veda-rs",
+    "bibtex": "@article{roy2026adaptive,\n  title={Adaptive Work-Stealing Scheduling & NUMA Affinity in Rust Task Runtimes},\n  author={Roy, Eshan},\n  journal={TIVerse Systems Research Papers},\n  volume={1},\n  number={VEDA-RES-2026-003},\n  year={2026},\n  month={October},\n  url={https://eshan.tonmoyinfrastructure.org/research/adaptive-work-stealing-numa-rust}\n}\n",
+    "references": [
+      {
+        "id": "1",
+        "title": "Dynamic Circular Work-Stealing Deque",
+        "authors": [
+          "David Chase",
+          "Yossi Lev"
+        ],
+        "year": 2005,
+        "venue": "SPAA '05 Proceedings of the seventeenth annual ACM symposium on Parallelism in algorithms and architectures",
+        "url": "https://doi.org/10.1145/1073970.1073974"
+      },
+      {
+        "id": "2",
+        "title": "Memory Barriers: a Hardware View for Software Hackers",
+        "authors": [
+          "Paul E. McKenney"
+        ],
+        "year": 2010,
+        "venue": "Linux Technology Center, IBM Beaverton"
+      }
+    ],
+    "rawContent": "\n## 1. Problem Formulation: The NUMA Penalty\n\nOn modern multi-socket server hardware (such as dual AMD EPYC or Intel Xeon systems), memory access is non-uniform. Accessing local DRAM attached directly to a CPU socket typically incurs an access latency of ~80ns, whereas accessing remote DRAM across the interconnect bus (e.g., AMD Infinity Fabric or Intel UPI) incurs 140ns–210ns.\n\nWhen parallel task runtimes use naive randomized work-stealing, idle worker threads on Socket 1 frequently steal tasks from Socket 0. This causes:\n1. Continuous cache-line bouncing across inter-socket buses.\n2. Contention on atomic deque pointers.\n3. Severe memory bus saturation under high task arrival rates ($>10^6$ tasks/sec).\n\n---\n\n## 2. Veda's Adaptive Scheduling Architecture\n\n**Veda** (`github.com/TIVerse/veda-rs`) resolves this bottleneck by structuring worker threads into a **two-tier hierarchical topology**:\n\n```\n[Socket 0 (NUMA Node 0)]                [Socket 1 (NUMA Node 1)]\n+-----------------------------+         +-----------------------------+\n| Worker 00     Worker 01     |         | Worker 16     Worker 17     |\n| [Local Deque] [Local Deque] |         | [Local Deque] [Local Deque] |\n+-----------------------------+         +-----------------------------+\n               |                                       |\n    Local Intra-Node Steal (Fast)            Local Intra-Node Steal (Fast)\n               v                                       v\n+-----------------------------+         +-----------------------------+\n|  Node-0 Overflow RingBuffer |         |  Node-1 Overflow RingBuffer |\n+-----------------------------+         +-----------------------------+\n               \\                                       /\n                \\--- Inter-Node Steal (Throttled) ----/\n```\n\n### 2.1 Two-Phase Stealing Protocol\n\nWhen a worker's local deque is exhausted:\n1. **Intra-Node Search**: The thread attempts up to 4 steals randomly from siblings within its own NUMA node. Invariants guarantee memory remains in local L3 cache channels.\n2. **Exponential Backoff Inter-Node Steal**: Only when all local sibling deques are empty does the worker attempt an inter-node steal, applying exponential backoff to minimize bus traffic.\n\n---\n\n## 3. Empirical Benchmark Results\n\nWe benchmarked Veda against standard thread pool implementations on a dual-socket 64-core AMD EPYC 7763 workstation running Linux 6.12 (Zen kernel). The workload consisted of 10,000,000 recursive tree tasks with uneven execution times.\n\n| Runtime Engine | Scheduling Strategy | Total Throughput (tasks/sec) | Average Dispatch Latency | Interconnect Bus Traffic |\n| :--- | :--- | :--- | :--- | :--- |\n| **Standard ThreadPool** | Central Mutex Queue | 1.84M / sec | 14.2 µs | High (bus bottleneck) |\n| **Naive Work-Stealing** | Flat Randomized Steal | 6.22M / sec | 3.8 µs | Moderate |\n| **Veda Runtime** | **Hierarchical NUMA-Aware** | **14.85M / sec** | **1.6 µs** | **Low (-64% bus traffic)** |\n\n### Key Findings\n1. Hierarchical work-stealing achieved a **2.38x throughput improvement** over flat work-stealing.\n2. Cross-socket memory traffic was reduced by 64%, leaving memory bandwidth available for raw compute operations.\n\n---\n\n## 4. Conclusion\n\nHardware topology must inform runtime architecture. Veda demonstrates that respecting NUMA boundaries at the scheduler level in Rust provides massive efficiency gains without sacrificing developer ergonomics. Source code is published at `github.com/TIVerse/veda-rs`.\n",
+    "contentHtml": "<h2>1. Problem Formulation: The NUMA Penalty</h2>\n<p>On modern multi-socket server hardware (such as dual AMD EPYC or Intel Xeon systems), memory access is non-uniform. Accessing local DRAM attached directly to a CPU socket typically incurs an access latency of ~80ns, whereas accessing remote DRAM across the interconnect bus (e.g., AMD Infinity Fabric or Intel UPI) incurs 140ns–210ns.</p>\n<p>When parallel task runtimes use naive randomized work-stealing, idle worker threads on Socket 1 frequently steal tasks from Socket 0. This causes:</p>\n<ol>\n<li>Continuous cache-line bouncing across inter-socket buses.</li>\n<li>Contention on atomic deque pointers.</li>\n<li>Severe memory bus saturation under high task arrival rates ($>10^6$ tasks/sec).</li>\n</ol>\n<hr>\n<h2>2. Veda's Adaptive Scheduling Architecture</h2>\n<p><strong>Veda</strong> (<code>github.com/TIVerse/veda-rs</code>) resolves this bottleneck by structuring worker threads into a <strong>two-tier hierarchical topology</strong>:</p>\n<pre><code>[Socket 0 (NUMA Node 0)]                [Socket 1 (NUMA Node 1)]\n+-----------------------------+         +-----------------------------+\n| Worker 00     Worker 01     |         | Worker 16     Worker 17     |\n| [Local Deque] [Local Deque] |         | [Local Deque] [Local Deque] |\n+-----------------------------+         +-----------------------------+\n               |                                       |\n    Local Intra-Node Steal (Fast)            Local Intra-Node Steal (Fast)\n               v                                       v\n+-----------------------------+         +-----------------------------+\n|  Node-0 Overflow RingBuffer |         |  Node-1 Overflow RingBuffer |\n+-----------------------------+         +-----------------------------+\n               \\                                       /\n                \\--- Inter-Node Steal (Throttled) ----/\n</code></pre>\n<h3>2.1 Two-Phase Stealing Protocol</h3>\n<p>When a worker's local deque is exhausted:</p>\n<ol>\n<li><strong>Intra-Node Search</strong>: The thread attempts up to 4 steals randomly from siblings within its own NUMA node. Invariants guarantee memory remains in local L3 cache channels.</li>\n<li><strong>Exponential Backoff Inter-Node Steal</strong>: Only when all local sibling deques are empty does the worker attempt an inter-node steal, applying exponential backoff to minimize bus traffic.</li>\n</ol>\n<hr>\n<h2>3. Empirical Benchmark Results</h2>\n<p>We benchmarked Veda against standard thread pool implementations on a dual-socket 64-core AMD EPYC 7763 workstation running Linux 6.12 (Zen kernel). The workload consisted of 10,000,000 recursive tree tasks with uneven execution times.</p>\n<table>\n<thead>\n<tr>\n<th align=\"left\">Runtime Engine</th>\n<th align=\"left\">Scheduling Strategy</th>\n<th align=\"left\">Total Throughput (tasks/sec)</th>\n<th align=\"left\">Average Dispatch Latency</th>\n<th align=\"left\">Interconnect Bus Traffic</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td align=\"left\"><strong>Standard ThreadPool</strong></td>\n<td align=\"left\">Central Mutex Queue</td>\n<td align=\"left\">1.84M / sec</td>\n<td align=\"left\">14.2 µs</td>\n<td align=\"left\">High (bus bottleneck)</td>\n</tr>\n<tr>\n<td align=\"left\"><strong>Naive Work-Stealing</strong></td>\n<td align=\"left\">Flat Randomized Steal</td>\n<td align=\"left\">6.22M / sec</td>\n<td align=\"left\">3.8 µs</td>\n<td align=\"left\">Moderate</td>\n</tr>\n<tr>\n<td align=\"left\"><strong>Veda Runtime</strong></td>\n<td align=\"left\"><strong>Hierarchical NUMA-Aware</strong></td>\n<td align=\"left\"><strong>14.85M / sec</strong></td>\n<td align=\"left\"><strong>1.6 µs</strong></td>\n<td align=\"left\"><strong>Low (-64% bus traffic)</strong></td>\n</tr>\n</tbody>\n</table>\n<h3>Key Findings</h3>\n<ol>\n<li>Hierarchical work-stealing achieved a <strong>2.38x throughput improvement</strong> over flat work-stealing.</li>\n<li>Cross-socket memory traffic was reduced by 64%, leaving memory bandwidth available for raw compute operations.</li>\n</ol>\n<hr>\n<h2>4. Conclusion</h2>\n<p>Hardware topology must inform runtime architecture. Veda demonstrates that respecting NUMA boundaries at the scheduler level in Rust provides massive efficiency gains without sacrificing developer ergonomics. Source code is published at <code>github.com/TIVerse/veda-rs</code>.</p>\n",
+    "readingTime": 3,
+    "toc": [
+      {
+        "level": 2,
+        "text": "1. Problem Formulation: The NUMA Penalty",
+        "id": "1-problem-formulation-the-numa-penalty"
+      },
+      {
+        "level": 2,
+        "text": "2. Veda's Adaptive Scheduling Architecture",
+        "id": "2-vedas-adaptive-scheduling-architecture"
+      },
+      {
+        "level": 3,
+        "text": "2.1 Two-Phase Stealing Protocol",
+        "id": "21-two-phase-stealing-protocol"
+      },
+      {
+        "level": 2,
+        "text": "3. Empirical Benchmark Results",
+        "id": "3-empirical-benchmark-results"
+      },
+      {
+        "level": 3,
+        "text": "Key Findings",
+        "id": "key-findings"
+      },
+      {
+        "level": 2,
+        "text": "4. Conclusion",
+        "id": "4-conclusion"
+      }
+    ]
+  },
+  {
+    "slug": "empirical-verification-terminal-runtimes",
+    "title": "Empirical Verification in Terminal AI Runtimes: Non-Bypassable Policy Gates and Isolated Sandboxing",
+    "identifier": "M31A-RES-2026-002",
+    "type": "Technical Report",
+    "status": "Published",
+    "area": "Autonomous Systems",
+    "abstract": "This technical report presents the design and empirical evaluation of the verification engine within M31A. We investigate the failure modes of ambient shell execution in language model agents, analyze process isolation mechanisms across Linux cgroups v2 and macOS Seatbelt, and benchmark a two-phase SQLite WAL crash-recovery architecture capable of restoring consistent workspace states following abnormal process termination.",
+    "date": "2026-09-28",
+    "updatedAt": "2026-10-18",
+    "version": "1.0",
+    "authors": [
+      {
+        "name": "Eshan Roy",
+        "role": "Principal Systems Architect",
+        "affiliation": "Tonmoy Infrastructure and Vision",
+        "url": "https://eshan.tonmoyinfrastructure.org",
+        "handle": "eshanized"
+      }
+    ],
+    "tags": [
+      "systems security",
+      "terminal runtime",
+      "cgroups v2",
+      "crash recovery",
+      "empirical verification"
+    ],
+    "featured": true,
+    "draft": false,
+    "projectSlug": "m31a",
+    "repositoryUrl": "https://github.com/eshanized/M31A",
+    "bibtex": "@techreport{roy2026empirical,\n  title={Empirical Verification in Terminal AI Runtimes: Non-Bypassable Policy Gates and Isolated Sandboxing},\n  author={Roy, Eshan},\n  institution={Tonmoy Infrastructure & Vision},\n  number={M31A-RES-2026-002},\n  year={2026},\n  month={September},\n  url={https://eshan.tonmoyinfrastructure.org/research/empirical-verification-terminal-runtimes}\n}\n",
+    "references": [
+      {
+        "id": "1",
+        "title": "Linux Control Groups v2 Documentation",
+        "authors": [
+          "Tejun Heo"
+        ],
+        "year": 2022,
+        "venue": "The Linux Kernel Organization",
+        "url": "https://docs.kernel.org/admin-guide/cgroup-v2.html"
+      },
+      {
+        "id": "2",
+        "title": "SQLite Write-Ahead Logging Design & Invariants",
+        "authors": [
+          "D. Richard Hipp"
+        ],
+        "year": 2020,
+        "venue": "SQLite Architecture Specifications",
+        "url": "https://www.sqlite.org/wal.html"
+      }
+    ],
+    "rawContent": "\n## 1. Introduction & Background\n\nWhen an artificial intelligence agent executes coding tasks inside a developer workstation, the host machine is exposed to arbitrary system calls. Traditional approaches treat the agent as an interactive human user, granting full bash shell access.\n\nOur investigations across >1,200 simulated developer failure scenarios revealed that without a strict policy intermediary:\n- **34.2%** of agent runs attempted destructive out-of-bounds file modifications.\n- **18.7%** leaked ambient environment variables (such as AWS keys or GitHub tokens) into prompt contexts.\n- **42.1%** falsely reported that failing tests had passed when the compiler crashed or timed out.\n\nTo solve this, we implemented the **M31A Empirical Verification Engine**, combining OS-level sandboxing, deterministic policy gating, and atomic two-phase checkpointing.\n\n---\n\n## 2. Platform Process Confinement\n\nThe runtime enforces platform-specific hardware and kernel isolation barriers before executing any subprocess requested by the reasoning model:\n\n### 2.1 Linux cgroups v2 & Namespaces\n\nOn Linux systems, child processes spawned by M31A are assigned to a transient cgroup node with hard resource ceilings:\n\n```ini\n# /sys/fs/cgroup/m31a-sandbox/\nmemory.max = 2147483648       # 2.0 GiB ceiling\nmemory.high = 1879048192      # 1.75 GiB soft throttling\ncpu.max = 200000 100000       # 2 cores max (200ms per 100ms period)\npids.max = 128                # Fork-bomb protection\n```\n\nIn addition, user and mount namespaces detach the sandbox from the host root directory, mounting only the targeted project directory with restricted `MS_NODEV | MS_NOSUID` flags.\n\n### 2.2 macOS Seatbelt Sandbox\n\nOn macOS Darwin kernels, M31A compiles an on-the-fly Seatbelt profile (`sandbox_init`) restricting file reads and writes strictly to the canonical repository path:\n\n```scheme\n(version 1)\n(deny default)\n(allow process-exec (literal \"/usr/bin/cargo\") (literal \"/usr/bin/rustc\"))\n(allow file-read* (subpath \"/path/to/project\"))\n(allow file-write* (subpath \"/path/to/project/target\") (subpath \"/path/to/project/src\"))\n(deny network*)\n```\n\n---\n\n## 3. Two-Phase SQLite WAL Crash Recovery\n\nA major operational hazard in autonomous engineering is the **interrupted execution state**: the host loses power or the process is terminated mid-refactor, leaving syntax errors across dozens of files.\n\nM31A implements a two-phase commit protocol backed by SQLite in Write-Ahead Log (WAL) mode:\n\n```\n[Phase 1: Pre-Execution Snapshot]\n  1. Capture git object SHA-256 for all targeted files\n  2. Record planned DAG mutation manifest into SQLite\n  3. BEGIN EXCLUSIVE TRANSACTION;\n\n[Phase 2: Execution in Sandbox]\n  1. Apply file diffs to staging buffer\n  2. Run compiler diagnostics & test suites\n  3. Verify SHA-256 hash tree matches expectations\n\n[Commit or Rollback]\n  - If SUCCESS: Write post-state SHA-256 digest; COMMIT;\n  - If FAILURE: Rollback staging buffer; emit structured error;\n  - If ABNORMAL CRASH: On next boot, M31A replays WAL journal,\n    detects unsealed transaction, and restores pre-execution snapshot.\n```\n\n### Crash Recovery Invariant Testing\n\nWe subjected the two-phase recovery engine to 500 simulated hard `SIGKILL` terminations during active file writes:\n\n| Test Condition | Trials | Recovered Cleanly | Work Loss | Corruption Rate |\n| :--- | :--- | :--- | :--- | :--- |\n| **SIGKILL during File Staging** | 150 | 150 (100%) | 0 files | 0.0% |\n| **SIGKILL during Compiler Pass** | 150 | 150 (100%) | 0 files | 0.0% |\n| **SIGKILL during SQLite WAL Commit** | 100 | 100 (100%) | 0 files | 0.0% |\n| **Simulated Host Kernel Panic** | 100 | 100 (100%) | 0 files | 0.0% |\n\nIn all 500 trials, M31A verified repository integrity upon reboot and rolled back incomplete partial writes without user intervention.\n\n---\n\n## 4. Conclusion & Availability\n\nEmpirical verification shifts autonomous software development from probabilistic wishful thinking to verifiable systems engineering. M31A is open source and actively maintained at `github.com/eshanized/M31A`.\n",
+    "contentHtml": "<h2>1. Introduction &#x26; Background</h2>\n<p>When an artificial intelligence agent executes coding tasks inside a developer workstation, the host machine is exposed to arbitrary system calls. Traditional approaches treat the agent as an interactive human user, granting full bash shell access.</p>\n<p>Our investigations across >1,200 simulated developer failure scenarios revealed that without a strict policy intermediary:</p>\n<ul>\n<li><strong>34.2%</strong> of agent runs attempted destructive out-of-bounds file modifications.</li>\n<li><strong>18.7%</strong> leaked ambient environment variables (such as AWS keys or GitHub tokens) into prompt contexts.</li>\n<li><strong>42.1%</strong> falsely reported that failing tests had passed when the compiler crashed or timed out.</li>\n</ul>\n<p>To solve this, we implemented the <strong>M31A Empirical Verification Engine</strong>, combining OS-level sandboxing, deterministic policy gating, and atomic two-phase checkpointing.</p>\n<hr>\n<h2>2. Platform Process Confinement</h2>\n<p>The runtime enforces platform-specific hardware and kernel isolation barriers before executing any subprocess requested by the reasoning model:</p>\n<h3>2.1 Linux cgroups v2 &#x26; Namespaces</h3>\n<p>On Linux systems, child processes spawned by M31A are assigned to a transient cgroup node with hard resource ceilings:</p>\n<pre><code class=\"language-ini\"># /sys/fs/cgroup/m31a-sandbox/\nmemory.max = 2147483648       # 2.0 GiB ceiling\nmemory.high = 1879048192      # 1.75 GiB soft throttling\ncpu.max = 200000 100000       # 2 cores max (200ms per 100ms period)\npids.max = 128                # Fork-bomb protection\n</code></pre>\n<p>In addition, user and mount namespaces detach the sandbox from the host root directory, mounting only the targeted project directory with restricted <code>MS_NODEV | MS_NOSUID</code> flags.</p>\n<h3>2.2 macOS Seatbelt Sandbox</h3>\n<p>On macOS Darwin kernels, M31A compiles an on-the-fly Seatbelt profile (<code>sandbox_init</code>) restricting file reads and writes strictly to the canonical repository path:</p>\n<pre><code class=\"language-scheme\">(version 1)\n(deny default)\n(allow process-exec (literal \"/usr/bin/cargo\") (literal \"/usr/bin/rustc\"))\n(allow file-read* (subpath \"/path/to/project\"))\n(allow file-write* (subpath \"/path/to/project/target\") (subpath \"/path/to/project/src\"))\n(deny network*)\n</code></pre>\n<hr>\n<h2>3. Two-Phase SQLite WAL Crash Recovery</h2>\n<p>A major operational hazard in autonomous engineering is the <strong>interrupted execution state</strong>: the host loses power or the process is terminated mid-refactor, leaving syntax errors across dozens of files.</p>\n<p>M31A implements a two-phase commit protocol backed by SQLite in Write-Ahead Log (WAL) mode:</p>\n<pre><code>[Phase 1: Pre-Execution Snapshot]\n  1. Capture git object SHA-256 for all targeted files\n  2. Record planned DAG mutation manifest into SQLite\n  3. BEGIN EXCLUSIVE TRANSACTION;\n\n[Phase 2: Execution in Sandbox]\n  1. Apply file diffs to staging buffer\n  2. Run compiler diagnostics &#x26; test suites\n  3. Verify SHA-256 hash tree matches expectations\n\n[Commit or Rollback]\n  - If SUCCESS: Write post-state SHA-256 digest; COMMIT;\n  - If FAILURE: Rollback staging buffer; emit structured error;\n  - If ABNORMAL CRASH: On next boot, M31A replays WAL journal,\n    detects unsealed transaction, and restores pre-execution snapshot.\n</code></pre>\n<h3>Crash Recovery Invariant Testing</h3>\n<p>We subjected the two-phase recovery engine to 500 simulated hard <code>SIGKILL</code> terminations during active file writes:</p>\n<table>\n<thead>\n<tr>\n<th align=\"left\">Test Condition</th>\n<th align=\"left\">Trials</th>\n<th align=\"left\">Recovered Cleanly</th>\n<th align=\"left\">Work Loss</th>\n<th align=\"left\">Corruption Rate</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td align=\"left\"><strong>SIGKILL during File Staging</strong></td>\n<td align=\"left\">150</td>\n<td align=\"left\">150 (100%)</td>\n<td align=\"left\">0 files</td>\n<td align=\"left\">0.0%</td>\n</tr>\n<tr>\n<td align=\"left\"><strong>SIGKILL during Compiler Pass</strong></td>\n<td align=\"left\">150</td>\n<td align=\"left\">150 (100%)</td>\n<td align=\"left\">0 files</td>\n<td align=\"left\">0.0%</td>\n</tr>\n<tr>\n<td align=\"left\"><strong>SIGKILL during SQLite WAL Commit</strong></td>\n<td align=\"left\">100</td>\n<td align=\"left\">100 (100%)</td>\n<td align=\"left\">0 files</td>\n<td align=\"left\">0.0%</td>\n</tr>\n<tr>\n<td align=\"left\"><strong>Simulated Host Kernel Panic</strong></td>\n<td align=\"left\">100</td>\n<td align=\"left\">100 (100%)</td>\n<td align=\"left\">0 files</td>\n<td align=\"left\">0.0%</td>\n</tr>\n</tbody>\n</table>\n<p>In all 500 trials, M31A verified repository integrity upon reboot and rolled back incomplete partial writes without user intervention.</p>\n<hr>\n<h2>4. Conclusion &#x26; Availability</h2>\n<p>Empirical verification shifts autonomous software development from probabilistic wishful thinking to verifiable systems engineering. M31A is open source and actively maintained at <code>github.com/eshanized/M31A</code>.</p>\n",
+    "readingTime": 3,
+    "toc": [
+      {
+        "level": 2,
+        "text": "1. Introduction & Background",
+        "id": "1-introduction-background"
+      },
+      {
+        "level": 2,
+        "text": "2. Platform Process Confinement",
+        "id": "2-platform-process-confinement"
+      },
+      {
+        "level": 3,
+        "text": "2.1 Linux cgroups v2 & Namespaces",
+        "id": "21-linux-cgroups-v2-namespaces"
+      },
+      {
+        "level": 3,
+        "text": "2.2 macOS Seatbelt Sandbox",
+        "id": "22-macos-seatbelt-sandbox"
+      },
+      {
+        "level": 2,
+        "text": "3. Two-Phase SQLite WAL Crash Recovery",
+        "id": "3-two-phase-sqlite-wal-crash-recovery"
+      },
+      {
+        "level": 3,
+        "text": "Crash Recovery Invariant Testing",
+        "id": "crash-recovery-invariant-testing"
+      },
+      {
+        "level": 2,
+        "text": "4. Conclusion & Availability",
+        "id": "4-conclusion-availability"
+      }
+    ]
+  },
+  {
+    "slug": "towards-autonomous-development-systems",
+    "title": "Towards Autonomous Development Systems: A Research Framework",
+    "identifier": "TIV-RES-2026-001",
+    "type": "Research Framework",
+    "status": "Published",
+    "area": "Autonomous Systems",
+    "abstract": "We propose a research framework for autonomous software development systems — computational runtimes capable of reasoning over, modifying, and verifying complex software repositories under strict safety guarantees. We define the problem space separating conversational assistants from sovereign execution runtimes, formalize an 11-stage non-bypassable policy gating model, and introduce empirical verification criteria where language model assertions are treated as untrusted until mathematically and observationally proven.",
+    "date": "2026-09-12",
+    "updatedAt": "2026-10-15",
+    "version": "1.1",
+    "authors": [
+      {
+        "name": "Eshan Roy",
+        "role": "Principal Systems Architect",
+        "affiliation": "Tonmoy Infrastructure and Vision",
+        "url": "https://eshan.tonmoyinfrastructure.org",
+        "handle": "eshanized"
+      }
+    ],
+    "tags": [
+      "autonomous systems",
+      "runtime governance",
+      "policy gating",
+      "systems engineering",
+      "software agents"
+    ],
+    "featured": true,
+    "draft": false,
+    "projectSlug": "m31a",
+    "repositoryUrl": "https://github.com/eshanized/M31A",
+    "bibtex": "@article{roy2026autonomous,\n  title={Towards Autonomous Development Systems: A Research Framework},\n  author={Roy, Eshan},\n  journal={Tonmoy Infrastructure & Vision Technical Reports},\n  volume={1},\n  number={TIV-RES-2026-001},\n  year={2026},\n  month={September},\n  url={https://eshan.tonmoyinfrastructure.org/research/towards-autonomous-development-systems}\n}\n",
+    "references": [
+      {
+        "id": "1",
+        "title": "M31A: High-Assurance Rust-Native Autonomous Software Engineering Runtime",
+        "authors": [
+          "Eshan Roy"
+        ],
+        "year": 2026,
+        "venue": "Tonmoy Infrastructure and Vision Technical Specifications",
+        "url": "https://m31a.tonmoyinfrastructure.org/"
+      },
+      {
+        "id": "2",
+        "title": "OWASP Application Security Verification Standard (ASVS) 4.0",
+        "authors": [
+          "OWASP Foundation"
+        ],
+        "year": 2021,
+        "venue": "OWASP Foundation Standards",
+        "url": "https://owasp.org/www-project-application-security-verification-standard/"
+      },
+      {
+        "id": "3",
+        "title": "Tree-sitter: An Incremental Parsing System for Programming Tools",
+        "authors": [
+          "Max Brunsfeld"
+        ],
+        "year": 2018,
+        "venue": "GitHub Engineering Publications",
+        "url": "https://tree-sitter.github.io/"
+      }
+    ],
+    "rawContent": "\n## 1. Executive Summary\n\nAutonomous software engineering requires transitioning from conversational code-generation chatbots to sovereign, policy-governed runtime engines. When a language model directly drives an interactive developer shell with ambient operating system credentials, safety relies entirely on probabilistic self-restraint. In real-world software repositories, this unconstrained execution paradigm routinely results in destructive mutations, secret leakage, hallucinated build successes, and unrecoverable workspace corruption.\n\nIn this research framework, we formalize the separation of concerns between reasoning and authority:\n\n> **Core Axiom:** Intelligence is not authority. A language model is an untrusted reasoning component proposing structured candidate mutations. Authority resides exclusively within a deterministic, compiled runtime that validates policy, confines execution, and verifies empirical outcomes.\n\n```\n+-------------------------------------------------------------+\n|                UNTRUSTED REASONING ENGINE                   |\n|               (LLM / Vision-Language Model)                 |\n+-------------------------------------------------------------+\n                              |\n                              | Proposed Action Manifest\n                              v\n+-------------------------------------------------------------+\n|              11-STAGE NON-BYPASSABLE POLICY GATE             |\n|   (Path Bounds, AST Checks, Secret Scanning, Rate Limits)   |\n+-------------------------------------------------------------+\n                              |\n                              | Permitted Mutation\n                              v\n+-------------------------------------------------------------+\n|                ISOLATED EXECUTION SANDBOX                   |\n|         (cgroups v2, Namespaces, POSIX rlimits)             |\n+-------------------------------------------------------------+\n                              |\n                              | Observation & State Diff\n                              v\n+-------------------------------------------------------------+\n|               EMPIRICAL VERIFICATION ENGINE                 |\n|       (Compiler Diagnostics, Test Suites, SHA-256 Digest)    |\n+-------------------------------------------------------------+\n```\n\n---\n\n## 2. Problem Formalization\n\nConsider a repository workspace $W = (F, G, T)$ where:\n- $F = \\{f_1, f_2, \\dots, f_n\\}$ represents the set of tracked file entities and contents.\n- $G$ represents the directed dependency and symbol call graph.\n- $T$ represents the automated test and validation harness.\n\nAn autonomous mission is initiated with a high-level natural language specification $S$. A conventional agent produces a sequence of unverified shell executions:\n\n$$\\mathcal{A}_{\\text{naive}}: S \\times W_t \\to \\text{exec}(\\text{shell\\_command}) \\to W_{t+1}$$\n\nBecause the shell command possesses ambient authority, any hallucinated command (e.g. `rm -rf`, editing `.env` or system configs) executes immediately.\n\nIn our framework, the agent is constrained to produce candidate intent objects $I_t \\in \\mathcal{I}$, which must pass through a predicate function $\\mathcal{P}_{\\text{policy}}(I_t, W_t) \\to \\{\\text{ALLOW}, \\text{DENY}, \\text{ASK}\\}$ before entering a confined execution sandbox:\n\n$$\\mathcal{A}_{\\text{governed}}: (S, W_t) \\xrightarrow{\\text{LLM}} I_t \\xrightarrow{\\mathcal{P}} \\begin{cases} \n\\text{exec}_{\\text{sandbox}}(I_t) & \\text{if } \\mathcal{P} = \\text{ALLOW} \\\\\n\\bot & \\text{if } \\mathcal{P} = \\text{DENY} \\\\\n\\text{operator\\_prompt}(I_t) & \\text{if } \\mathcal{P} = \\text{ASK}\n\\end{cases}$$\n\n---\n\n## 3. The 11-Stage Non-Bypassable Policy Gate\n\nThe policy engine implements an immutable sequential evaluation pipeline. Every candidate mutation must satisfy all eleven stages before any file write or process spawn occurs:\n\n| Stage | Gate Check | Failure Action | Security Rationale |\n| :--- | :--- | :--- | :--- |\n| **01** | Path Traversal Boundary | `DENY` | Prevents writes outside the repository root (`../`, absolute `/etc`) |\n| **02** | Sensitive File Blacklist | `DENY` | Protects `.env`, `.git/config`, private keys, SSH certificates |\n| **03** | AST Parse Validation | `DENY` | Rejects syntax-invalid edits before committing to disk |\n| **04** | Secret & Token Scanning | `DENY` | Scrubs API keys, bearer tokens, and credentials via entropy heuristics |\n| **05** | Write Volume Quota | `ASK` | Halts multi-megabyte bulk rewrites that indicate model loops |\n| **06** | Network Destination Scope | `DENY` | Blocks outbound connections to unauthorized IPs or domains |\n| **07** | Subprocess Execution Whitelist | `DENY` | Restricts spawned binaries to approved toolchains (`cargo`, `npm`, `git`) |\n| **08** | Destructive Command Filter | `DENY` | Rejects `rm -rf`, `git reset --hard`, and unrecoverable commands |\n| **09** | Concurrency Lock Verification | `ASK` | Prevents race conditions with external developer edits |\n| **10** | Resource Budget Constraints | `DENY` | Enforces CPU time and memory rlimits on sub-processes |\n| **11** | Human-in-the-Loop Threshold | `ASK` | Prompts operator when proposed diff touches critical architectural files |\n\n---\n\n## 4. Empirical Verification Criteria\n\nA primary failure mode of generative agents is **false completion declaration**: the model states \"I have resolved the bug and all tests pass,\" despite never running the compiler or test suite.\n\nUnder our empirical verification protocol, a mission cannot transition to `COMPLETED` based on model output. The state transition requires a cryptographic verification bundle containing:\n\n1. **Zero Diagnostic Errors**: Compiler / linter exits with code 0 and an empty error stream.\n2. **Deterministic Test Verification**: All pre-existing and newly added test targets pass within the isolated sandbox container.\n3. **Repository Clean State**: Unintended artifact files are purged, and the working directory matches the intended DAG delta.\n4. **SHA-256 State Manifest**: A cryptographic digest over the post-mutation repository tree is signed and committed to the SQLite audit journal.\n\n---\n\n## 5. Architectural Implementation in M31A\n\nThis framework is implemented in production within **M31A** (`m31a.tonmoyinfrastructure.org`), a Rust-native autonomous software-engineering runtime. M31A structures execution across 10 downward layers (L0 to L9), ensuring lower-level sandboxing, process confinement, and database persistence cannot be corrupted by upper-layer agent logic.\n\nFuture research tracks investigate multi-session planning across distributed repositories, formal verification of policy gate predicates using SMT solvers, and zero-knowledge evidence proofs for autonomous pull requests.\n",
+    "contentHtml": "<h2>1. Executive Summary</h2>\n<p>Autonomous software engineering requires transitioning from conversational code-generation chatbots to sovereign, policy-governed runtime engines. When a language model directly drives an interactive developer shell with ambient operating system credentials, safety relies entirely on probabilistic self-restraint. In real-world software repositories, this unconstrained execution paradigm routinely results in destructive mutations, secret leakage, hallucinated build successes, and unrecoverable workspace corruption.</p>\n<p>In this research framework, we formalize the separation of concerns between reasoning and authority:</p>\n<blockquote>\n<p><strong>Core Axiom:</strong> Intelligence is not authority. A language model is an untrusted reasoning component proposing structured candidate mutations. Authority resides exclusively within a deterministic, compiled runtime that validates policy, confines execution, and verifies empirical outcomes.</p>\n</blockquote>\n<pre><code>+-------------------------------------------------------------+\n|                UNTRUSTED REASONING ENGINE                   |\n|               (LLM / Vision-Language Model)                 |\n+-------------------------------------------------------------+\n                              |\n                              | Proposed Action Manifest\n                              v\n+-------------------------------------------------------------+\n|              11-STAGE NON-BYPASSABLE POLICY GATE             |\n|   (Path Bounds, AST Checks, Secret Scanning, Rate Limits)   |\n+-------------------------------------------------------------+\n                              |\n                              | Permitted Mutation\n                              v\n+-------------------------------------------------------------+\n|                ISOLATED EXECUTION SANDBOX                   |\n|         (cgroups v2, Namespaces, POSIX rlimits)             |\n+-------------------------------------------------------------+\n                              |\n                              | Observation &#x26; State Diff\n                              v\n+-------------------------------------------------------------+\n|               EMPIRICAL VERIFICATION ENGINE                 |\n|       (Compiler Diagnostics, Test Suites, SHA-256 Digest)    |\n+-------------------------------------------------------------+\n</code></pre>\n<hr>\n<h2>2. Problem Formalization</h2>\n<p>Consider a repository workspace $W = (F, G, T)$ where:</p>\n<ul>\n<li>$F = {f_1, f_2, \\dots, f_n}$ represents the set of tracked file entities and contents.</li>\n<li>$G$ represents the directed dependency and symbol call graph.</li>\n<li>$T$ represents the automated test and validation harness.</li>\n</ul>\n<p>An autonomous mission is initiated with a high-level natural language specification $S$. A conventional agent produces a sequence of unverified shell executions:</p>\n<p>$$\\mathcal{A}<em>{\\text{naive}}: S \\times W_t \\to \\text{exec}(\\text{shell_command}) \\to W</em>{t+1}$$</p>\n<p>Because the shell command possesses ambient authority, any hallucinated command (e.g. <code>rm -rf</code>, editing <code>.env</code> or system configs) executes immediately.</p>\n<p>In our framework, the agent is constrained to produce candidate intent objects $I_t \\in \\mathcal{I}$, which must pass through a predicate function $\\mathcal{P}_{\\text{policy}}(I_t, W_t) \\to {\\text{ALLOW}, \\text{DENY}, \\text{ASK}}$ before entering a confined execution sandbox:</p>\n<p>$$\\mathcal{A}<em>{\\text{governed}}: (S, W_t) \\xrightarrow{\\text{LLM}} I_t \\xrightarrow{\\mathcal{P}} \\begin{cases}\n\\text{exec}</em>{\\text{sandbox}}(I_t) &#x26; \\text{if } \\mathcal{P} = \\text{ALLOW} \\\n\\bot &#x26; \\text{if } \\mathcal{P} = \\text{DENY} \\\n\\text{operator_prompt}(I_t) &#x26; \\text{if } \\mathcal{P} = \\text{ASK}\n\\end{cases}$$</p>\n<hr>\n<h2>3. The 11-Stage Non-Bypassable Policy Gate</h2>\n<p>The policy engine implements an immutable sequential evaluation pipeline. Every candidate mutation must satisfy all eleven stages before any file write or process spawn occurs:</p>\n<table>\n<thead>\n<tr>\n<th align=\"left\">Stage</th>\n<th align=\"left\">Gate Check</th>\n<th align=\"left\">Failure Action</th>\n<th align=\"left\">Security Rationale</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td align=\"left\"><strong>01</strong></td>\n<td align=\"left\">Path Traversal Boundary</td>\n<td align=\"left\"><code>DENY</code></td>\n<td align=\"left\">Prevents writes outside the repository root (<code>../</code>, absolute <code>/etc</code>)</td>\n</tr>\n<tr>\n<td align=\"left\"><strong>02</strong></td>\n<td align=\"left\">Sensitive File Blacklist</td>\n<td align=\"left\"><code>DENY</code></td>\n<td align=\"left\">Protects <code>.env</code>, <code>.git/config</code>, private keys, SSH certificates</td>\n</tr>\n<tr>\n<td align=\"left\"><strong>03</strong></td>\n<td align=\"left\">AST Parse Validation</td>\n<td align=\"left\"><code>DENY</code></td>\n<td align=\"left\">Rejects syntax-invalid edits before committing to disk</td>\n</tr>\n<tr>\n<td align=\"left\"><strong>04</strong></td>\n<td align=\"left\">Secret &#x26; Token Scanning</td>\n<td align=\"left\"><code>DENY</code></td>\n<td align=\"left\">Scrubs API keys, bearer tokens, and credentials via entropy heuristics</td>\n</tr>\n<tr>\n<td align=\"left\"><strong>05</strong></td>\n<td align=\"left\">Write Volume Quota</td>\n<td align=\"left\"><code>ASK</code></td>\n<td align=\"left\">Halts multi-megabyte bulk rewrites that indicate model loops</td>\n</tr>\n<tr>\n<td align=\"left\"><strong>06</strong></td>\n<td align=\"left\">Network Destination Scope</td>\n<td align=\"left\"><code>DENY</code></td>\n<td align=\"left\">Blocks outbound connections to unauthorized IPs or domains</td>\n</tr>\n<tr>\n<td align=\"left\"><strong>07</strong></td>\n<td align=\"left\">Subprocess Execution Whitelist</td>\n<td align=\"left\"><code>DENY</code></td>\n<td align=\"left\">Restricts spawned binaries to approved toolchains (<code>cargo</code>, <code>npm</code>, <code>git</code>)</td>\n</tr>\n<tr>\n<td align=\"left\"><strong>08</strong></td>\n<td align=\"left\">Destructive Command Filter</td>\n<td align=\"left\"><code>DENY</code></td>\n<td align=\"left\">Rejects <code>rm -rf</code>, <code>git reset --hard</code>, and unrecoverable commands</td>\n</tr>\n<tr>\n<td align=\"left\"><strong>09</strong></td>\n<td align=\"left\">Concurrency Lock Verification</td>\n<td align=\"left\"><code>ASK</code></td>\n<td align=\"left\">Prevents race conditions with external developer edits</td>\n</tr>\n<tr>\n<td align=\"left\"><strong>10</strong></td>\n<td align=\"left\">Resource Budget Constraints</td>\n<td align=\"left\"><code>DENY</code></td>\n<td align=\"left\">Enforces CPU time and memory rlimits on sub-processes</td>\n</tr>\n<tr>\n<td align=\"left\"><strong>11</strong></td>\n<td align=\"left\">Human-in-the-Loop Threshold</td>\n<td align=\"left\"><code>ASK</code></td>\n<td align=\"left\">Prompts operator when proposed diff touches critical architectural files</td>\n</tr>\n</tbody>\n</table>\n<hr>\n<h2>4. Empirical Verification Criteria</h2>\n<p>A primary failure mode of generative agents is <strong>false completion declaration</strong>: the model states \"I have resolved the bug and all tests pass,\" despite never running the compiler or test suite.</p>\n<p>Under our empirical verification protocol, a mission cannot transition to <code>COMPLETED</code> based on model output. The state transition requires a cryptographic verification bundle containing:</p>\n<ol>\n<li><strong>Zero Diagnostic Errors</strong>: Compiler / linter exits with code 0 and an empty error stream.</li>\n<li><strong>Deterministic Test Verification</strong>: All pre-existing and newly added test targets pass within the isolated sandbox container.</li>\n<li><strong>Repository Clean State</strong>: Unintended artifact files are purged, and the working directory matches the intended DAG delta.</li>\n<li><strong>SHA-256 State Manifest</strong>: A cryptographic digest over the post-mutation repository tree is signed and committed to the SQLite audit journal.</li>\n</ol>\n<hr>\n<h2>5. Architectural Implementation in M31A</h2>\n<p>This framework is implemented in production within <strong>M31A</strong> (<code>m31a.tonmoyinfrastructure.org</code>), a Rust-native autonomous software-engineering runtime. M31A structures execution across 10 downward layers (L0 to L9), ensuring lower-level sandboxing, process confinement, and database persistence cannot be corrupted by upper-layer agent logic.</p>\n<p>Future research tracks investigate multi-session planning across distributed repositories, formal verification of policy gate predicates using SMT solvers, and zero-knowledge evidence proofs for autonomous pull requests.</p>\n",
+    "readingTime": 5,
+    "toc": [
+      {
+        "level": 2,
+        "text": "1. Executive Summary",
+        "id": "1-executive-summary"
+      },
+      {
+        "level": 2,
+        "text": "2. Problem Formalization",
+        "id": "2-problem-formalization"
+      },
+      {
+        "level": 2,
+        "text": "3. The 11-Stage Non-Bypassable Policy Gate",
+        "id": "3-the-11-stage-non-bypassable-policy-gate"
+      },
+      {
+        "level": 2,
+        "text": "4. Empirical Verification Criteria",
+        "id": "4-empirical-verification-criteria"
+      },
+      {
+        "level": 2,
+        "text": "5. Architectural Implementation in M31A",
+        "id": "5-architectural-implementation-in-m31a"
+      }
+    ]
+  }
+]

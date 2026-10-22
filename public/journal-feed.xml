@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+  <title>Eshan Roy — Engineering Journal</title>
+  <link>https://eshan.tonmoyinfrastructure.org</link>
+  <description>Technical deep-dives into systems engineering, Rust concurrency, Linux kernels, and AI agents.</description>
+  <language>en-us</language>
+  <lastBuildDate>Thu, 22 Oct 2026 14:04:26 GMT</lastBuildDate>
+  <atom:link href="https://eshan.tonmoyinfrastructure.org/journal-feed.xml" rel="self" type="application/rss+xml" />
+  
+  <item>
+    <title>Engineering OpenMail: Modern Self-Hosted Mail Infrastructure with Zero-CLI Configuration</title>
+    <link>https://eshan.tonmoyinfrastructure.org/journal/self-hosting-modern-webmail-openmail</link>
+    <guid isPermaLink="true">https://eshan.tonmoyinfrastructure.org/journal/self-hosting-modern-webmail-openmail</guid>
+    <description>Why self-hosted email infrastructure remains essential for digital sovereignty, and how OpenMail bridges legacy IMAP/SMTP protocols with modern reactive web ergonomics.</description>
+    <pubDate>Thu, 15 Oct 2026 00:00:00 GMT</pubDate>
+    <author>m.eshanized@gmail.com (Eshan Roy)</author>
+  </item>
+  <item>
+    <title>High-Performance Concurrency in Rust: Lessons from Building Veda and Polaris</title>
+    <link>https://eshan.tonmoyinfrastructure.org/journal/high-performance-rust-allocators-and-concurrency</link>
+    <guid isPermaLink="true">https://eshan.tonmoyinfrastructure.org/journal/high-performance-rust-allocators-and-concurrency</guid>
+    <description>Practical lessons learned building low-latency parallel runtimes, lock-free work-stealing deques, and declarative procedural macro engines in production Rust.</description>
+    <pubDate>Mon, 12 Oct 2026 00:00:00 GMT</pubDate>
+    <author>m.eshanized@gmail.com (Eshan Roy)</author>
+  </item>
+  <item>
+    <title>Why Chatbots Fail at Coding: Enforcing Deterministic Policy Gates in Autonomous Agents</title>
+    <link>https://eshan.tonmoyinfrastructure.org/journal/deterministic-policy-gates-for-ai-coding</link>
+    <guid isPermaLink="true">https://eshan.tonmoyinfrastructure.org/journal/deterministic-policy-gates-for-ai-coding</guid>
+    <description>Why prompt engineering alone cannot secure AI coding agents, and how compiled AST verification and non-bypassable policy gates turn unpredictable model outputs into reliable repository mutations.</description>
+    <pubDate>Thu, 08 Oct 2026 00:00:00 GMT</pubDate>
+    <author>m.eshanized@gmail.com (Eshan Roy)</author>
+  </item>
+  <item>
+    <title>Designing Kyro: Local-First Desktop Automation with Tauri v2, Rust, and MCP</title>
+    <link>https://eshan.tonmoyinfrastructure.org/journal/designing-zero-trust-desktop-agents-kyro</link>
+    <guid isPermaLink="true">https://eshan.tonmoyinfrastructure.org/journal/designing-zero-trust-desktop-agents-kyro</guid>
+    <description>How we built Kyro, a local-first autonomous desktop AI agent that bridges screen understanding and real computer use with zero-trust local SQLite privacy and OS Keyring security.</description>
+    <pubDate>Fri, 02 Oct 2026 00:00:00 GMT</pubDate>
+    <author>m.eshanized@gmail.com (Eshan Roy)</author>
+  </item>
+  <item>
+    <title>Architecting Snigdha OS: Custom Kernel Switching, Minimal Arch Base, and i3wm Workstation Ergonomics</title>
+    <link>https://eshan.tonmoyinfrastructure.org/journal/snigdha-os-custom-linux-engineering</link>
+    <guid isPermaLink="true">https://eshan.tonmoyinfrastructure.org/journal/snigdha-os-custom-linux-engineering</guid>
+    <description>How we engineered an Arch-based Linux ecosystem tailored for developer productivity, systems programming, and penetration testing, featuring custom kernel tooling and automated PKGBUILD pipelines.</description>
+    <pubDate>Thu, 24 Sep 2026 00:00:00 GMT</pubDate>
+    <author>m.eshanized@gmail.com (Eshan Roy)</author>
+  </item>
+  <item>
+    <title>Inside M31A: Building a Rust-Native Autonomous Engineering Runtime</title>
+    <link>https://eshan.tonmoyinfrastructure.org/journal/building-m31a-runtime-architecture</link>
+    <guid isPermaLink="true">https://eshan.tonmoyinfrastructure.org/journal/building-m31a-runtime-architecture</guid>
+    <description>A comprehensive architectural breakdown of M31A, explaining why intelligence is not authority, how the 10-tier downward module hierarchy functions, and how two-phase SQLite recovery prevents workspace corruption.</description>
+    <pubDate>Fri, 18 Sep 2026 00:00:00 GMT</pubDate>
+    <author>m.eshanized@gmail.com (Eshan Roy)</author>
+  </item>
+</channel>
+</rss>

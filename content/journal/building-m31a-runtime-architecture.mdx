@@ -1,0 +1,124 @@
+---
+slug: "building-m31a-runtime-architecture"
+title: "Inside M31A: Building a Rust-Native Autonomous Engineering Runtime"
+description: "A comprehensive architectural breakdown of M31A, explaining why intelligence is not authority, how the 10-tier downward module hierarchy functions, and how two-phase SQLite recovery prevents workspace corruption."
+date: "2026-09-18"
+updatedAt: "2026-10-16"
+category: "Autonomous Agents"
+tags: ["rust", "m31a", "autonomous-agents", "ratatui", "systems-architecture"]
+featured: true
+draft: false
+relatedProjectSlug: "m31a"
+author:
+  name: "Eshan Roy"
+  role: "Principal Systems Architect"
+  affiliation: "Tonmoy Infrastructure and Vision"
+  url: "https://eshan.tonmoyinfrastructure.org"
+  handle: "eshanized"
+references:
+  - id: "1"
+    title: "M31 Autonomous Documentation"
+    authors: ["Eshan Roy"]
+    year: 2026
+    venue: "m31a.tonmoyinfrastructure.org"
+    url: "https://m31a.tonmoyinfrastructure.org"
+---
+
+## 1. Why Another Coding Agent?
+
+Most AI coding tools in the industry today are thin wrapper clients around LLM chat endpoints. They spawn an interactive bash shell in the background, send user instructions to a cloud API, and allow the model to pipe arbitrary commands into `exec()`.
+
+When this approach meets real-world software engineering, three structural failure modes appear immediately:
+1. **Unconstrained Side Effects**: The model attempts `git reset --hard` or modifies `.bashrc` when debugging a local path issue.
+2. **Hallucinated Success**: The model confidently states "I have refactored the auth module and all 40 tests pass," while never having executed the compiler.
+3. **Dirty Crash States**: An unexpected token exhaustion or network timeout terminates the process halfway through a multi-file rewrite, leaving syntax errors scattered across the repository.
+
+With **M31A (M31 Autonomous)**, we discarded the chatbot paradigm and built a **sovereign engineering runtime** written entirely in Rust.
+
+---
+
+## 2. Architectural Invariant: Intelligence is Not Authority
+
+In M31A, we enforce a strict architectural boundary between **reasoning** and **authority**:
+
+```
++--------------------------------------------------------------+
+|                    L9 // AGENT REASONING                     |
+|           Proposes candidate mutations and intent            |
++--------------------------------------------------------------+
+                               |
+                               | Untrusted Intent
+                               v
++--------------------------------------------------------------+
+|                     L5 // POLICY ENGINE                      |
+|         Deterministic 11-Stage ALLOW / DENY Gate             |
++--------------------------------------------------------------+
+                               |
+                               | Authorized Action
+                               v
++--------------------------------------------------------------+
+|               L2-L3 // PERSISTENCE & SANDBOX                 |
+|           SQLite WAL atomic snapshot & POSIX isolation       |
++--------------------------------------------------------------+
+```
+
+The language model is treated as an untrusted third-party component. It does not have access to standard library file APIs, cannot read ambient environment variables, and cannot execute shell processes.
+
+It can only emit structured JSON intent envelopes matching our strict schema:
+
+```rust
+pub enum ProposedAction {
+    ModifyFile {
+        path: PathBuf,
+        expected_pre_hash: String,
+        diff: String,
+    },
+    SpawnCompiler {
+        target: BuildTarget,
+        flags: Vec<String>,
+    },
+    RunTestSuite {
+        filter: Option<String>,
+    },
+    RequestOperatorApproval {
+        reason: String,
+        context_diff: String,
+    },
+}
+```
+
+---
+
+## 3. The 10-Tier Downward Hierarchy (L0 to L9)
+
+M31A enforces a compile-time downward dependency rule: code in layer $L_k$ may only depend on modules in layers $L_j$ where $j < k$. Cyclic dependencies across layers fail the CI compiler pass:
+
+- **L0: Primitives & Types**: Common error enums, cryptographic hashes, UUIDs.
+- **L1: Redaction & Security**: Entropy scanners, zero-leak credential scrubbers.
+- **L2: Persistence**: SQLite WAL state machine, transaction journals.
+- **L3: Process Confinement**: Linux cgroups v2, namespaces, macOS Seatbelt profiles.
+- **L4: Repository Intelligence**: Git object model, AST trees, diff generators.
+- **L5: Policy Gate**: 11-stage non-bypassable security checks.
+- **L6: Verification Engine**: Compiler diagnostic parsers, test runners.
+- **L7: Task Graph (DAG)**: Topological wave execution and dependency resolution.
+- **L8: Terminal Cockpit**: Ratatui-based TUI, keyboard events, diff rendering.
+- **L9: Autonomous Agents**: Model orchestration, prompt synthesis, tool calling.
+
+---
+
+## 4. The 4-Stage Execution Loop
+
+Every mission runs through an unbroken 4-stage state machine:
+
+1. **PLAN**: The reasoning engine inspects repository symbols and synthesizes an acyclic directed graph (DAG).
+2. **APPLY**: Candidate actions are submitted to the Policy Gate. If approved, file diffs are written to a temporary staging buffer.
+3. **CHECK**: The verification engine invokes compiler diagnostics and test suites inside the execution sandbox.
+4. **STATE**: If checks pass, changes are atomically committed to SQLite and disk with a SHA-256 state manifest. If any check fails, the staging buffer is discarded and the model receives compiler diagnostics for self-repair.
+
+---
+
+## 5. Summary & Getting Started
+
+M31A proves that artificial intelligence can be safely integrated into developer infrastructure when wrapped in rigorous systems software.
+
+Explore the source code on GitHub at [github.com/eshanized/M31A](https://github.com/eshanized/M31A) or read the complete technical documentation at [m31a.tonmoyinfrastructure.org](https://m31a.tonmoyinfrastructure.org).

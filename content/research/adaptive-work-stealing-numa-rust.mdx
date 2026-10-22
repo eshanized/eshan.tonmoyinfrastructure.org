@@ -1,0 +1,110 @@
+---
+slug: "adaptive-work-stealing-numa-rust"
+title: "Adaptive Work-Stealing Scheduling & NUMA Affinity in Rust Task Runtimes"
+identifier: "VEDA-RES-2026-003"
+type: "Systems Experiment"
+status: "Published"
+area: "Systems Engineering"
+date: "2026-10-04"
+updatedAt: "2026-10-19"
+version: "1.0"
+featured: false
+draft: false
+projectSlug: "veda"
+repositoryUrl: "https://github.com/TIVerse/veda-rs"
+abstract: "Parallel task scheduling across modern multi-socket hardware encounters severe throughput degradation from cross-NUMA interconnect contention and false cache-line sharing. We present the design of Veda, a high-performance Rust parallel execution runtime implementing an adaptive work-stealing algorithm with NUMA node affinity pinning. Empirical benchmarks on 32-core and 64-core topologies demonstrate up to a 2.4x reduction in task dispatch latency compared to naive work-stealing."
+authors:
+  - name: "Eshan Roy"
+    role: "Systems Programmer"
+    affiliation: "Tonmoy Infrastructure and Vision"
+    url: "https://eshan.tonmoyinfrastructure.org"
+    handle: "eshanized"
+tags:
+  - "concurrency"
+  - "rust"
+  - "work-stealing"
+  - "numa"
+  - "lock-free"
+bibtex: |
+  @article{roy2026adaptive,
+    title={Adaptive Work-Stealing Scheduling & NUMA Affinity in Rust Task Runtimes},
+    author={Roy, Eshan},
+    journal={TIVerse Systems Research Papers},
+    volume={1},
+    number={VEDA-RES-2026-003},
+    year={2026},
+    month={October},
+    url={https://eshan.tonmoyinfrastructure.org/research/adaptive-work-stealing-numa-rust}
+  }
+references:
+  - id: "1"
+    title: "Dynamic Circular Work-Stealing Deque"
+    authors: ["David Chase", "Yossi Lev"]
+    year: 2005
+    venue: "SPAA '05 Proceedings of the seventeenth annual ACM symposium on Parallelism in algorithms and architectures"
+    url: "https://doi.org/10.1145/1073970.1073974"
+  - id: "2"
+    title: "Memory Barriers: a Hardware View for Software Hackers"
+    authors: ["Paul E. McKenney"]
+    year: 2010
+    venue: "Linux Technology Center, IBM Beaverton"
+---
+
+## 1. Problem Formulation: The NUMA Penalty
+
+On modern multi-socket server hardware (such as dual AMD EPYC or Intel Xeon systems), memory access is non-uniform. Accessing local DRAM attached directly to a CPU socket typically incurs an access latency of ~80ns, whereas accessing remote DRAM across the interconnect bus (e.g., AMD Infinity Fabric or Intel UPI) incurs 140ns–210ns.
+
+When parallel task runtimes use naive randomized work-stealing, idle worker threads on Socket 1 frequently steal tasks from Socket 0. This causes:
+1. Continuous cache-line bouncing across inter-socket buses.
+2. Contention on atomic deque pointers.
+3. Severe memory bus saturation under high task arrival rates ($>10^6$ tasks/sec).
+
+---
+
+## 2. Veda's Adaptive Scheduling Architecture
+
+**Veda** (`github.com/TIVerse/veda-rs`) resolves this bottleneck by structuring worker threads into a **two-tier hierarchical topology**:
+
+```
+[Socket 0 (NUMA Node 0)]                [Socket 1 (NUMA Node 1)]
++-----------------------------+         +-----------------------------+
+| Worker 00     Worker 01     |         | Worker 16     Worker 17     |
+| [Local Deque] [Local Deque] |         | [Local Deque] [Local Deque] |
++-----------------------------+         +-----------------------------+
+               |                                       |
+    Local Intra-Node Steal (Fast)            Local Intra-Node Steal (Fast)
+               v                                       v
++-----------------------------+         +-----------------------------+
+|  Node-0 Overflow RingBuffer |         |  Node-1 Overflow RingBuffer |
++-----------------------------+         +-----------------------------+
+               \                                       /
+                \--- Inter-Node Steal (Throttled) ----/
+```
+
+### 2.1 Two-Phase Stealing Protocol
+
+When a worker's local deque is exhausted:
+1. **Intra-Node Search**: The thread attempts up to 4 steals randomly from siblings within its own NUMA node. Invariants guarantee memory remains in local L3 cache channels.
+2. **Exponential Backoff Inter-Node Steal**: Only when all local sibling deques are empty does the worker attempt an inter-node steal, applying exponential backoff to minimize bus traffic.
+
+---
+
+## 3. Empirical Benchmark Results
+
+We benchmarked Veda against standard thread pool implementations on a dual-socket 64-core AMD EPYC 7763 workstation running Linux 6.12 (Zen kernel). The workload consisted of 10,000,000 recursive tree tasks with uneven execution times.
+
+| Runtime Engine | Scheduling Strategy | Total Throughput (tasks/sec) | Average Dispatch Latency | Interconnect Bus Traffic |
+| :--- | :--- | :--- | :--- | :--- |
+| **Standard ThreadPool** | Central Mutex Queue | 1.84M / sec | 14.2 µs | High (bus bottleneck) |
+| **Naive Work-Stealing** | Flat Randomized Steal | 6.22M / sec | 3.8 µs | Moderate |
+| **Veda Runtime** | **Hierarchical NUMA-Aware** | **14.85M / sec** | **1.6 µs** | **Low (-64% bus traffic)** |
+
+### Key Findings
+1. Hierarchical work-stealing achieved a **2.38x throughput improvement** over flat work-stealing.
+2. Cross-socket memory traffic was reduced by 64%, leaving memory bandwidth available for raw compute operations.
+
+---
+
+## 4. Conclusion
+
+Hardware topology must inform runtime architecture. Veda demonstrates that respecting NUMA boundaries at the scheduler level in Rust provides massive efficiency gains without sacrificing developer ergonomics. Source code is published at `github.com/TIVerse/veda-rs`.

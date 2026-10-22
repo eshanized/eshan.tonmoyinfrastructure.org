@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+  <title>Eshan Roy — Research Publications &amp; Technical Reports</title>
+  <link>https://eshan.tonmoyinfrastructure.org</link>
+  <description>Peer-reviewed frameworks, systems experiments, and technical reports on autonomous development systems.</description>
+  <language>en-us</language>
+  <lastBuildDate>Thu, 22 Oct 2026 14:04:26 GMT</lastBuildDate>
+  <atom:link href="https://eshan.tonmoyinfrastructure.org/research-feed.xml" rel="self" type="application/rss+xml" />
+  
+  <item>
+    <title>Parameter-Efficient Fine-Tuning Benchmarks for Sub-8B Small Language Models</title>
+    <link>https://eshan.tonmoyinfrastructure.org/research/parameter-efficient-fine-tuning-slm</link>
+    <guid isPermaLink="true">https://eshan.tonmoyinfrastructure.org/research/parameter-efficient-fine-tuning-slm</guid>
+    <description>Deploying generative intelligence on edge hardware and single-GPU developer workstations requires rigorous parameter-efficient fine-tuning (PEFT) of Small Language Models (SLMs) in the 1B to 8B parameter range. This report documents the empirical evaluation underlying SLMGen. We analyze LoRA rank sensitivity, 4-bit NormalFloat (NF4) quantization degradation, and dataset token hygiene heuristics across Phi-3.5, Llama-3.2, and Qwen-2.5 base models.</description>
+    <pubDate>Sat, 10 Oct 2026 00:00:00 GMT</pubDate>
+    <author>m.eshanized@gmail.com (Eshan Roy)</author>
+  </item>
+  <item>
+    <title>Adaptive Work-Stealing Scheduling &amp; NUMA Affinity in Rust Task Runtimes</title>
+    <link>https://eshan.tonmoyinfrastructure.org/research/adaptive-work-stealing-numa-rust</link>
+    <guid isPermaLink="true">https://eshan.tonmoyinfrastructure.org/research/adaptive-work-stealing-numa-rust</guid>
+    <description>Parallel task scheduling across modern multi-socket hardware encounters severe throughput degradation from cross-NUMA interconnect contention and false cache-line sharing. We present the design of Veda, a high-performance Rust parallel execution runtime implementing an adaptive work-stealing algorithm with NUMA node affinity pinning. Empirical benchmarks on 32-core and 64-core topologies demonstrate up to a 2.4x reduction in task dispatch latency compared to naive work-stealing.</description>
+    <pubDate>Sun, 04 Oct 2026 00:00:00 GMT</pubDate>
+    <author>m.eshanized@gmail.com (Eshan Roy)</author>
+  </item>
+  <item>
+    <title>Empirical Verification in Terminal AI Runtimes: Non-Bypassable Policy Gates and Isolated Sandboxing</title>
+    <link>https://eshan.tonmoyinfrastructure.org/research/empirical-verification-terminal-runtimes</link>
+    <guid isPermaLink="true">https://eshan.tonmoyinfrastructure.org/research/empirical-verification-terminal-runtimes</guid>
+    <description>This technical report presents the design and empirical evaluation of the verification engine within M31A. We investigate the failure modes of ambient shell execution in language model agents, analyze process isolation mechanisms across Linux cgroups v2 and macOS Seatbelt, and benchmark a two-phase SQLite WAL crash-recovery architecture capable of restoring consistent workspace states following abnormal process termination.</description>
+    <pubDate>Mon, 28 Sep 2026 00:00:00 GMT</pubDate>
+    <author>m.eshanized@gmail.com (Eshan Roy)</author>
+  </item>
+  <item>
+    <title>Towards Autonomous Development Systems: A Research Framework</title>
+    <link>https://eshan.tonmoyinfrastructure.org/research/towards-autonomous-development-systems</link>
+    <guid isPermaLink="true">https://eshan.tonmoyinfrastructure.org/research/towards-autonomous-development-systems</guid>
+    <description>We propose a research framework for autonomous software development systems — computational runtimes capable of reasoning over, modifying, and verifying complex software repositories under strict safety guarantees. We define the problem space separating conversational assistants from sovereign execution runtimes, formalize an 11-stage non-bypassable policy gating model, and introduce empirical verification criteria where language model assertions are treated as untrusted until mathematically and observationally proven.</description>
+    <pubDate>Sat, 12 Sep 2026 00:00:00 GMT</pubDate>
+    <author>m.eshanized@gmail.com (Eshan Roy)</author>
+  </item>
+</channel>
+</rss>
